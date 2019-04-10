@@ -3,19 +3,27 @@ package com.yhl.orm.componet.util;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yhl.orm.componet.constant.Expression;
+import com.yhl.orm.componet.constant.WhereCondition;
 import com.yhl.orm.componet.constant.WhereContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class PresentWhereContextUtil {
@@ -40,13 +48,21 @@ public class PresentWhereContextUtil {
         if (!ObjectUtils.isEmpty(whereContext.getGroupby())){
             groupBy(query,root,whereContext.getGroupby().toArray(new String[whereContext.getGroupby().size()]));
         }
-
         //排序
         Sort sort = getToSort( whereContext.getSort());
         if (sort != null) {
             query.orderBy(QueryUtils.toOrders(sort, root, builder));
         }
         return  entityManager.createQuery(query);
+    }
+    /**
+     * 获取构建好wherecondition条件的TypedQuery
+     * */
+    public static <T> CriteriaQuery<T> getCriteriaQueryByPredicate(Class<T> tClass, EntityManager entityManager, Predicate predicate){
+        CriteriaBuilder  builder=entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> query = builder.createQuery(tClass);
+        query.where(predicate);
+        return  query;
     }
 
     public static<T> Predicate expressionToPredicate(CriteriaBuilder  builder,Root<T> root,Expression[] expressions){
@@ -144,7 +160,7 @@ public class PresentWhereContextUtil {
     }
 
 
-    private  static  void groupBy(CriteriaQuery  query,Root root,String[] fieldNames){
+    public   static  void groupBy(CriteriaQuery  query,Root root,String[] fieldNames){
         if (fieldNames!=null){
             Path[] paths =new  Path [fieldNames.length];
             for (int i = 0; i < fieldNames.length ; i++) {
@@ -189,4 +205,44 @@ public class PresentWhereContextUtil {
         return  new Sort(list);
     }
 
+    public static <T> Page<T> readPage(WhereContext whereContext,Class<T> clazz, EntityManager entityManager) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> query = builder.createQuery(clazz);
+        Root<T> root = query.from(clazz);
+
+        Expression[] expressions = whereContext.getExpressions().toArray(new Expression[whereContext.getExpressions().size()]);
+        Predicate predicate = PresentWhereContextUtil.expressionToPredicate(builder,root,expressions);
+
+        CriteriaQuery<T> criteriaQuery = PresentWhereContextUtil.getCriteriaQueryByPredicate(clazz,entityManager,predicate);
+        CriteriaQuery<Long> countQuery =PresentWhereContextUtil.getCriteriaQueryByPredicate(Long.class,entityManager,predicate);
+
+        String[] group =whereContext.getGroupby().toArray(new String[whereContext.getGroupby().size()]);
+        PresentWhereContextUtil.groupBy(criteriaQuery,root,group);
+        PresentWhereContextUtil.groupBy(countQuery,root,group);
+
+        Sort sort = PresentWhereContextUtil.getToSort(whereContext.getSort());
+        if (!ObjectUtils.isEmpty(sort)){
+            criteriaQuery.orderBy(QueryUtils.toOrders(sort, root, builder));
+        }
+
+        if (countQuery.isDistinct()) {
+            countQuery.select(builder.countDistinct(root));
+        } else {
+            countQuery.select(builder.count(root));
+        }
+
+        TypedQuery<T> typedQuery =entityManager.createQuery(criteriaQuery);
+        TypedQuery<Long> typedCountQuery =entityManager.createQuery(countQuery);
+
+        List<Long> totals = typedCountQuery.getResultList();
+        Long total = 0L;
+        Long element;
+        for(Iterator var3 = totals.iterator(); var3.hasNext(); total = total + (element == null ? 0L : element)) {
+            element = (Long)var3.next();
+        }
+        PageRequest pageable =new PageRequest(whereContext.getPageNum() - 1, whereContext.getPageSize(),sort);
+        typedCountQuery.setFirstResult((int) pageable.getOffset());
+        typedCountQuery.setMaxResults(pageable.getPageSize());
+        return new PageImpl(typedQuery.getResultList(), pageable, total);
+    }
 }

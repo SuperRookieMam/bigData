@@ -4,6 +4,7 @@ package com.yhl.orm.dao;
 import com.yhl.orm.componet.constant.PageInfo;
 import com.yhl.orm.componet.constant.UpdateFields;
 import com.yhl.orm.componet.constant.WhereCondition;
+import com.yhl.orm.componet.constant.WhereContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -60,7 +61,7 @@ public interface JpaBaseDao<T,ID extends Serializable>  extends JpaRepository<T,
     public long findCountByWhereCondition(WhereCondition whereCondition);
 
 
-    public <T> PageInfo<T> findPageByParams(WhereCondition whereCondition);
+    public <T> PageInfo<T> findPageByParams(WhereContext whereContext);
 
 
     public void deleteById(ID id);

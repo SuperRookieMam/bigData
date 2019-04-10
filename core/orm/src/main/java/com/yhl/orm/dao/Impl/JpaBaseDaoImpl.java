@@ -1,11 +1,15 @@
 package com.yhl.orm.dao.Impl;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.yhl.orm.componet.constant.*;
 import com.yhl.orm.componet.util.MyClassUtil;
 import com.yhl.orm.componet.util.MyQueryUtil;
+import com.yhl.orm.componet.util.PresentWhereContextUtil;
 import com.yhl.orm.dao.JpaBaseDao;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.util.ObjectUtils;
 
@@ -13,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -24,7 +29,6 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
 
     private final EntityManager entityManager;
     private Class clazz;
-    private WhereContext<ConnectCondition> whereContext;
     private CriteriaBuilder builder ;
     private CriteriaQuery<T> query;
     private Root<T> root;
@@ -151,14 +155,14 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     }
 
     @Override
-    public <T> PageInfo<T> findPageByParams(WhereCondition whereCondition) {
-        Page page = MyQueryUtil.readPage(whereCondition,clazz,entityManager);
+    public <T> PageInfo<T> findPageByParams(WhereContext whereContext) {
+        Page page = PresentWhereContextUtil.readPage(whereContext,clazz,entityManager);
         PageInfo<T> pageInfo=new PageInfo<>();
-        pageInfo.setPageNum(whereCondition.getPageNum());
-        pageInfo.setPageSize(whereCondition.getPageSize());
-        pageInfo.setStartRow((whereCondition.getPageNum()-1)*whereCondition.getPageSize());
-        pageInfo.setEndRow((whereCondition.getPageNum()-1)*whereCondition.getPageSize()+whereCondition.getPageSize());
-        pageInfo.setPages((int) pageInfo.getTotal()/(pageInfo.getPageSize()==0?1:pageInfo.getPageSize()));
+        pageInfo.setPageNum(page.getNumber());
+        pageInfo.setPageSize(page.getSize());
+        pageInfo.setStartRow((whereContext.getPageNum()-1)*whereContext.getPageSize());
+        pageInfo.setEndRow((whereContext.getPageNum()-1)*whereContext.getPageSize()+whereContext.getPageSize());
+        pageInfo.setPages(page.getTotalPages());
         pageInfo.setList(page.getContent());
         pageInfo.setTotal(page.getTotalElements());
         pageInfo.setOrderBy(page.getSort().toString());
