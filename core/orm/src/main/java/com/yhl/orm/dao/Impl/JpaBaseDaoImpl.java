@@ -188,7 +188,12 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
         super.deleteAll(list);
         return list.size();
     }
-
+    @Override
+    public int deleteByPredicate(Predicate predicate) {
+        List<T> list = this.findbyPredicate(predicate);
+        super.deleteAll(list);
+        return list.size();
+    }
     @Override
    public List<T> findbyPredicate(Predicate predicate){
        CriteriaQuery<T> query = this.builder.createQuery(clazz);

@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.provider.approval.Approval;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.Predicate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +22,7 @@ public class UserApprovalServiceImpl extends BaseServiceImpl<UserApproval, Long>
     private final String SCOPE = "scope";
 
     @Override
-    @Transactional(value = "transactionManagerPrimary", rollbackFor = Exception.class)
+    @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public boolean addApprovals(Collection<Approval> approvals) {
         List<UserApproval> userApprovals = UserApproval.approvalToUserApproval(approvals);
         ResultDto resultDto = insertByList(userApprovals);
@@ -30,17 +31,20 @@ public class UserApprovalServiceImpl extends BaseServiceImpl<UserApproval, Long>
     }
 
     @Override
-    @Transactional(value = "transactionManagerPrimary", rollbackFor = Exception.class)
+    @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public boolean revokeApprovals(Collection<Approval> approvals) {
         Iterator<Approval> iterator = approvals.iterator();
         int m = 0;
         while (iterator.hasNext()) {
             Approval approval = iterator.next();
-            WhereCondition whereCondition = new WhereCondition();
-            whereCondition.and().addEq(CLIENTID, approval.getClientId())
-                    .addEq(USERID, approval.getUserId())
-                    .addEq(SCOPE, approval.getScope());
-            deleteByWhereCondition(whereCondition);
+            Predicate predicate = getWhereBuildUtil().addEq(CLIENTID, approval.getClientId())
+                               .and()
+                               .addEq(USERID,approval.getUserId())
+                               .and()
+                               .addEq(SCOPE,approval.getScope())
+                               .and()
+                               .end();
+            deleteByPredicate(predicate);
             m++;
         }
         return m == approvals.size();
@@ -48,9 +52,12 @@ public class UserApprovalServiceImpl extends BaseServiceImpl<UserApproval, Long>
 
     @Override
     public Collection<Approval> getApprovals(String userId, String clientId) {
-        WhereCondition whereCondition = new WhereCondition();
-        whereCondition.and().addEq(USERID, userId).addEq(CLIENTID, clientId);
-        ResultDto resultDto = findByParams(whereCondition);
+        Predicate predicate = getWhereBuildUtil().addEq(USERID,userId)
+                                                 .and()
+                                                 .addEq(CLIENTID,clientId)
+                                                 .and()
+                                                 .end();
+        ResultDto resultDto = findbyPredicate(predicate);
         List<Approval> approvals = UserApproval.userApprovalToApproval((List<UserApproval>) resultDto.getData());
         return approvals;
     }

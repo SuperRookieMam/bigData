@@ -105,6 +105,11 @@ public class BaseServiceImpl<T extends BaseEntity,ID extends Serializable> imple
     public ResultDto deleteByWhereContext(WhereContext whereContext) {
         return ResultDto.success(baseDao.deleteByWhereContext(whereContext));
     }
+
+    @Override
+    public ResultDto deleteByPredicate(Predicate predicate) {
+        return ResultDto.success(baseDao.deleteByPredicate(predicate));
+    }
     @Override
     public ResultDto findbyPredicate(Predicate predicate){
         return  ResultDto.success(baseDao.findbyPredicate(predicate));

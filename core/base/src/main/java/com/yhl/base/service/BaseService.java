@@ -43,6 +43,8 @@ public interface BaseService<T extends BaseEntity,ID extends Serializable> {
 
     ResultDto deleteByWhereContext(WhereContext whereContext);
 
+    ResultDto deleteByPredicate(Predicate predicate);
+
     ResultDto findbyPredicate(Predicate predicate);
 
     ResultDto findGroupbyByPredicate(Predicate predicate, String[] groupbys);

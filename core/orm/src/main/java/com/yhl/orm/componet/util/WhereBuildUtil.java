@@ -17,8 +17,6 @@ import java.util.Set;
 
 public class WhereBuildUtil<T,ID extends Serializable>{
 
-    private List<Predicate>  predicates =new ArrayList<>();
-
     private Predicate currentPredicate;
 
     private Predicate currentPredicateNew;
@@ -31,31 +29,40 @@ public class WhereBuildUtil<T,ID extends Serializable>{
         this.builder =jpaBaseDao.getBuilder();
         this.root =jpaBaseDao.getRoot();
     }
-    public WhereBuildUtil<T,ID> beginAnExpression(){
-          currentPredicate = builder.disjunction();
-          return this;
-    }
     public WhereBuildUtil<T,ID> and(){
-        currentPredicate =ObjectUtils.isEmpty(currentPredicateNew)
-                          ?builder.and(currentPredicate)
+        Assert.notNull(currentPredicateNew, "请先构建条件再连接");
+        currentPredicate =ObjectUtils.isEmpty(currentPredicate)
+                          ?currentPredicateNew
                           :builder.and(currentPredicate,currentPredicateNew);
         return this;
     }
     public WhereBuildUtil<T,ID> or(){
-        currentPredicate =ObjectUtils.isEmpty(currentPredicateNew)
-                ?builder.or(currentPredicate)
+        Assert.notNull(currentPredicateNew, "请先构建条件再连接");
+        currentPredicate =ObjectUtils.isEmpty(currentPredicate)
+                ?currentPredicateNew
                 :builder.or(currentPredicate,currentPredicateNew);
         return this;
     }
-    public Predicate build(){
-        Predicate predicate = builder.and(predicates.toArray(new Predicate[predicates.size()]));
-        return predicate;
-    }
-    public void end(){
-        predicates.add(currentPredicate);
+    public Predicate end(){
+        Assert.notNull(currentPredicateNew, "请先构建条件再连接");
+        Predicate predicate =currentPredicate;
         currentPredicate =null;
         currentPredicateNew =null;
+        return predicate;
     }
+    public Predicate build(Predicate predicate1,Predicate predicate2,String type){
+        if (ObjectUtils.isEmpty(predicate1)||ObjectUtils.isEmpty(predicate2)){
+            Assert.notNull(currentPredicateNew, "请先构建条件再连接");
+        }
+        if ("and".equalsIgnoreCase(type)&&"or".equalsIgnoreCase(type)){
+            Assert.notNull(null, "请明确构建类型 and 或 or");
+        }
+        Predicate predicate ="and".equalsIgnoreCase(type)
+                             ?builder.and(predicate1,predicate2)
+                             :builder.or(predicate1,predicate2);
+        return predicate;
+    }
+
     public WhereBuildUtil<T,ID> addLike(String key,Object value){
             currentPredicateNew =  builder.like(getPath(key),"%/"+value+"%",'/');
             return this;
@@ -181,4 +188,5 @@ public class WhereBuildUtil<T,ID extends Serializable>{
         return  localDateTime;
 
     }
+
 }

@@ -50,7 +50,9 @@ import java.util.Map;
 
      int deleteByWhereContext(WhereContext whereContext) ;
 
-     List<T> findbyPredicate(Predicate predicate);
+    int deleteByPredicate(Predicate predicate);
+
+    List<T> findbyPredicate(Predicate predicate);
 
 
     List<T> findGroupbyByPredicate(Predicate predicate, String[] groupbys);
