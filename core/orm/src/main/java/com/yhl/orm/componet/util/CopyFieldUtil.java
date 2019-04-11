@@ -25,7 +25,7 @@ public class CopyFieldUtil {
                 String key =iterator.next().toString();
                 // 判断主键不跟新
                 if (map.containsKey(key+"_key")){
-                    throw new  RuntimeException("主键不能跟新");
+                    continue;
                 }
                 Object object = fieldContext.get(key);
                 Field  field  = map.get(key);

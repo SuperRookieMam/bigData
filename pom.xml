@@ -13,6 +13,7 @@
     <modules>
         <module>dependences</module>
         <module>core</module>
+        <module>auth2</module>
     </modules>
 
     <properties>

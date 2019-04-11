@@ -1,6 +1,7 @@
 package com.yhl.orm.dao.Impl;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.PageInfo;
 import com.yhl.orm.componet.constant.WhereContext;
@@ -9,6 +10,8 @@ import com.yhl.orm.componet.util.MyClassUtil;
 import com.yhl.orm.componet.util.PresentWhereContextUtil;
 import com.yhl.orm.dao.JpaBaseDao;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.util.ObjectUtils;
 
@@ -16,6 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -112,8 +116,9 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
      * 根据条件跟新某个字段，但不是联表跟新，
      * */
     @Override
-    public <T> int updateByFieldContextAndWhereContext (FieldContext fieldContext, WhereContext whereContext, int flushSize) {
+    public <T> int updateByFieldContextAndWhereContext (WhereContext whereContext, int flushSize) {
         Map<String, Field> map =getFieldMap();
+        FieldContext fieldContext =whereContext.getFieldContext();
         List<T> list =findByWhereContext(whereContext);
         for (int i = 0; i < list.size(); i++) {
             T entity = list.get(i);
@@ -183,6 +188,53 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
         super.deleteAll(list);
         return list.size();
     }
+
+    @Override
+   public List<T> findbyPredicate(Predicate predicate){
+       CriteriaQuery<T> query = this.builder.createQuery(clazz);
+       query.from(clazz);
+       query.where(predicate);
+       TypedQuery typedQuery =entityManager.createQuery(query);
+       return  typedQuery.getResultList();
+    }
+
+    @Override
+    public List<T> findGroupbyByPredicate(Predicate predicate, String[] groupbys){
+        CriteriaQuery<T> query = this.builder.createQuery(clazz);
+        Root<T>  root =query.from(clazz);
+        query.where(predicate);
+        PresentWhereContextUtil.groupBy(query,root,groupbys);
+        TypedQuery typedQuery =entityManager.createQuery(query);
+        return  typedQuery.getResultList();
+    }
+
+    @Override
+    public List<T> findOrderByPredicate(Predicate predicate, JSONArray sorts){
+        CriteriaQuery<T> query = this.builder.createQuery(clazz);
+        Root<T>  root =query.from(clazz);
+        query.where(predicate);
+        Sort sort = PresentWhereContextUtil.getToSort(sorts);
+        if (sort != null) {
+            query.orderBy(QueryUtils.toOrders(sort, root, builder));
+        }
+        TypedQuery typedQuery =entityManager.createQuery(query);
+        return  typedQuery.getResultList();
+    }
+    @Override
+    public List<T> findOrderAndGroupByPredicate(Predicate predicate,String[] groupbys, JSONArray sorts){
+        CriteriaQuery<T> query = this.builder.createQuery(clazz);
+        Root<T>  root =query.from(clazz);
+        query.where(predicate);
+        PresentWhereContextUtil.groupBy(query,root,groupbys);
+        Sort sort = PresentWhereContextUtil.getToSort(sorts);
+        if (sort != null) {
+            query.orderBy(QueryUtils.toOrders(sort, root, builder));
+        }
+        TypedQuery typedQuery =entityManager.createQuery(query);
+        return  typedQuery.getResultList();
+    }
+
+
 
     public EntityManager getEntityManager(){
         return  this.entityManager;

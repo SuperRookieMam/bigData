@@ -231,7 +231,6 @@ public class PresentWhereContextUtil {
         TypedQuery<T> typedQuery =entityManager.createQuery(criteriaQuery);
         TypedQuery<Long> typedCountQuery =entityManager.createQuery(countQuery);
 
-
         Long total = executeCountQuery(typedCountQuery);
         PageRequest pageable =new PageRequest(whereContext.getPageNum() - 1, whereContext.getPageSize(),sort);
         typedCountQuery.setFirstResult((int) pageable.getOffset());

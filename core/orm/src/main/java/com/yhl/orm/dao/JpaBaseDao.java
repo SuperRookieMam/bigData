@@ -1,6 +1,7 @@
 package com.yhl.orm.dao;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.PageInfo;
 import com.yhl.orm.componet.constant.WhereContext;
@@ -11,6 +12,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -32,7 +34,7 @@ import java.util.Map;
 
      <T> int updateByFieldContexts(FieldContext[] fieldContexts, int flushSize);
 
-     <T> int updateByFieldContextAndWhereContext(FieldContext fieldContext, WhereContext whereContext, int flushSize);
+     <T> int updateByFieldContextAndWhereContext(WhereContext whereContext, int flushSize);
 
      <T> List<T> findByWhereContext(WhereContext whereContext);
 
@@ -48,7 +50,16 @@ import java.util.Map;
 
      int deleteByWhereContext(WhereContext whereContext) ;
 
-     EntityManager getEntityManager();
+     List<T> findbyPredicate(Predicate predicate);
+
+
+    List<T> findGroupbyByPredicate(Predicate predicate, String[] groupbys);
+
+    List<T> findOrderByPredicate(Predicate predicate, JSONArray sorts);
+
+    List<T> findOrderAndGroupByPredicate(Predicate predicate, String[] groupbys, JSONArray sorts);
+
+    EntityManager getEntityManager();
 
      Class getEntityClass();
 
