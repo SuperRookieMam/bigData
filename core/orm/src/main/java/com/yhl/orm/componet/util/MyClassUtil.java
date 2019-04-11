@@ -1,7 +1,9 @@
 package com.yhl.orm.componet.util;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
+import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -21,7 +23,7 @@ public class MyClassUtil<T> {
     /**
     * 通过反射获取定义class时申明父类的单行的类型
     * */
-   public static  Class getSuperClassGenricType(Class clazz, int index){
+    public static  Class getSuperClassGenricType(Class clazz, int index){
        //得到泛型父类
        Type genType =clazz.getGenericSuperclass();
 
@@ -116,6 +118,10 @@ public class MyClassUtil<T> {
         while (flag){
             Field[] fields =superClass.getDeclaredFields();
             for (int i = 0; i <fields.length ; i++) {
+                Id id =fields[i].getAnnotation(Id.class);
+                if (!ObjectUtils.isEmpty(id)){
+                    map.put(fields[i].getName()+"_key",fields[i]);
+                }
                 map.put(fields[i].getName(),fields[i]);
             }
             superClass =superClass.getSuperclass();
@@ -123,6 +129,10 @@ public class MyClassUtil<T> {
         }
         Field[] fields = clazz.getDeclaredFields();
         for (int i = 0; i <fields.length ; i++) {
+            Id id =fields[i].getAnnotation(Id.class);
+            if (!ObjectUtils.isEmpty(id)){
+                map.put(fields[i].getName()+"_key",fields[i]);
+            }
             map.put(fields[i].getName(),fields[i]);
         }
         return map;

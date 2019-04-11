@@ -3,7 +3,6 @@ package com.yhl.orm.componet.util;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yhl.orm.componet.constant.Expression;
-import com.yhl.orm.componet.constant.WhereCondition;
 import com.yhl.orm.componet.constant.WhereContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,14 +14,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -234,15 +231,26 @@ public class PresentWhereContextUtil {
         TypedQuery<T> typedQuery =entityManager.createQuery(criteriaQuery);
         TypedQuery<Long> typedCountQuery =entityManager.createQuery(countQuery);
 
-        List<Long> totals = typedCountQuery.getResultList();
-        Long total = 0L;
-        Long element;
-        for(Iterator var3 = totals.iterator(); var3.hasNext(); total = total + (element == null ? 0L : element)) {
-            element = (Long)var3.next();
-        }
+
+        Long total = executeCountQuery(typedCountQuery);
         PageRequest pageable =new PageRequest(whereContext.getPageNum() - 1, whereContext.getPageSize(),sort);
         typedCountQuery.setFirstResult((int) pageable.getOffset());
         typedCountQuery.setMaxResults(pageable.getPageSize());
         return new PageImpl(typedQuery.getResultList(), pageable, total);
     }
+
+    /**
+     * 执行查询条数
+     * */
+    public static Long executeCountQuery(TypedQuery<Long> query) {
+        Assert.notNull(query, "TypedQuery must not be null!");
+        List<Long> totals = query.getResultList();
+        Long total = 0L;
+        Long element;
+        for(Iterator var3 = totals.iterator(); var3.hasNext(); total = total + (element == null ? 0L : element)) {
+            element = (Long)var3.next();
+        }
+        return total;
+    }
+
 }

@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 @Getter
 @Setter
 public class WhereContext  extends LinkedHashMap {
-
+    private static final long serialVersionUID = 2999006637841047561L;
     //value = "当前页", dataType = "Integer", required = true
     private  Integer pageNum;
     //value = "分页大  小", dataType = "Integer", required = true
@@ -20,4 +20,6 @@ public class WhereContext  extends LinkedHashMap {
     private JSONArray groupby;
 
     private ArrayList<Expression> expressions;
+
+    private FieldContext fieldContext;
 }

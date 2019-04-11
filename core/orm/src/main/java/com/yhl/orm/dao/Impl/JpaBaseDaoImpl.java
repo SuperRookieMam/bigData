@@ -1,15 +1,14 @@
 package com.yhl.orm.dao.Impl;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.yhl.orm.componet.constant.*;
+import com.yhl.orm.componet.constant.FieldContext;
+import com.yhl.orm.componet.constant.PageInfo;
+import com.yhl.orm.componet.constant.WhereContext;
+import com.yhl.orm.componet.util.CopyFieldUtil;
 import com.yhl.orm.componet.util.MyClassUtil;
-import com.yhl.orm.componet.util.MyQueryUtil;
 import com.yhl.orm.componet.util.PresentWhereContextUtil;
 import com.yhl.orm.dao.JpaBaseDao;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.util.ObjectUtils;
 
@@ -17,7 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -30,25 +28,17 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     private final EntityManager entityManager;
     private Class clazz;
     private CriteriaBuilder builder ;
-    private CriteriaQuery<T> query;
     private Root<T> root;
-
+    private Map<String,Field> fieldMap;
+    private String ID ="id";
     //父类没有不带参数的构造方法，这里手动构造父类
     public JpaBaseDaoImpl(Class<T> modelClass, EntityManager entityManager) {
         super(modelClass, entityManager);
         this.entityManager = entityManager;
         clazz =modelClass;
         this.builder = this.entityManager.getCriteriaBuilder();
-        this.query =this.builder.createQuery(clazz);
-        this.root =this.query.from(clazz);
+        this.root =this.builder.createQuery(clazz).from(clazz);
     }
- /*   *//**
-     * 根据id查询
-     * *//*
-    @Override
-    public <T> T findById(ID id) {
-        return (T) entityManager.find(clazz,id);
-    }*/
     /**
      * 单个插入
      * */
@@ -73,15 +63,6 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
         }
         return entitys.size();
     }
-    /**
-     * 单个跟新
-     * */
-    @Override
-    public <T> T updateByUpdateFields(UpdateFields updateFields) {
-      T entity =(T)  entityManager.find(clazz,updateFields.get("id"));
-        entity = updateFields.copyPropertis(entity,updateFields,entityManager);
-        return entityManager.merge(entity);
-    }
 
     /**
      * 注意这entity 必须时游览状态的要不肯能跟新不聊
@@ -101,32 +82,42 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     }
 
     /**
+     * 单个跟新
+     * */
+    @Override
+    public <T> T updateByFieldContext(FieldContext fieldContext) {
+        T entity =(T)entityManager.find(clazz,fieldContext.get(ID));
+        entity = CopyFieldUtil.copyPropertis(entity,fieldContext,entityManager,getFieldMap());
+        return entityManager.merge(entity);
+    }
+
+    /**
      * 批量跟新
      * */
     @Override
-    public <T> int updateByUpdateFields(UpdateFields[] updateFieldss, int flushSize) {
-        Map<String, Field> map = MyClassUtil.getAllFields(clazz);
-        for (int i = 0; i < updateFieldss.length; i++) {
-            T entity =(T)  entityManager.find(clazz,updateFieldss[i].get("id"));
-            entity = UpdateFields.copyPropertis(entity,updateFieldss[i],entityManager,map);
+    public <T> int updateByFieldContexts(FieldContext[] fieldContexts, int flushSize) {
+        Map<String, Field> map =getFieldMap();
+        for (int i = 0; i < fieldContexts.length; i++) {
+            T entity =(T)  entityManager.find(clazz,fieldContexts[i].get(ID));
+            entity = CopyFieldUtil.copyPropertis(entity,fieldContexts[i],entityManager,map);
             entityManager.merge(entity);
             if (i%flushSize==0){
                 entityManager.flush();
                 entityManager.clear();
             }
         }
-        return updateFieldss.length;
+        return fieldContexts.length;
     }
     /**
      * 根据条件跟新某个字段，但不是联表跟新，
      * */
     @Override
-    public <T> int updateByWhereCondition (UpdateFields updateFields, WhereCondition whereCondition, int flushSize) {
-        Map<String, Field> map = MyClassUtil.getAllFields(clazz);
-        List<T> list =findByParams(whereCondition);
+    public <T> int updateByFieldContextAndWhereContext (FieldContext fieldContext, WhereContext whereContext, int flushSize) {
+        Map<String, Field> map =getFieldMap();
+        List<T> list =findByWhereContext(whereContext);
         for (int i = 0; i < list.size(); i++) {
             T entity = list.get(i);
-            entity = updateFields.copyPropertis(entity,updateFields,entityManager,map);
+            entity = CopyFieldUtil.copyPropertis(entity,fieldContext,entityManager,map);
             entityManager.merge(entity);
             if (i%flushSize==0){
                 entityManager.flush();
@@ -137,25 +128,25 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     }
 
     @Override
-    public <T> List<T> findByParams(WhereCondition whereCondition) {
-        if (whereCondition==null){
+    public <T> List<T> findByWhereContext(WhereContext whereContext) {
+       if (whereContext==null){
             return (List<T>)super.findAll();
         }
-        List<T> list = MyQueryUtil.getTypedQuery(clazz,entityManager,whereCondition).getResultList();
+        List<T> list = PresentWhereContextUtil.getTypedQuery(clazz,entityManager,whereContext).getResultList();
         return list;
     }
 
     @Override
-    public long findCountByWhereCondition(WhereCondition whereCondition) {
-        if (whereCondition==null){
+    public long findCountByWhereContext(WhereContext whereContext) {
+        if (whereContext==null){
             return super.count();
         }
-        TypedQuery query =MyQueryUtil.getCountQuery(clazz,entityManager,whereCondition);
-        return MyQueryUtil.executeCountQuery(query);
+        TypedQuery query =PresentWhereContextUtil.getTypedQuery(Long.class,entityManager,whereContext);
+        return PresentWhereContextUtil.executeCountQuery(query);
     }
 
     @Override
-    public <T> PageInfo<T> findPageByParams(WhereContext whereContext) {
+    public <T> PageInfo<T> findPageByWhereContext(WhereContext whereContext) {
         Page page = PresentWhereContextUtil.readPage(whereContext,clazz,entityManager);
         PageInfo<T> pageInfo=new PageInfo<>();
         pageInfo.setPageNum(page.getNumber());
@@ -187,8 +178,8 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
          }
     }
     @Override
-    public int deleteByWhereCondition(WhereCondition whereCondition) {
-        List<T> list = this.findByParams(whereCondition);
+    public int deleteByWhereContext(WhereContext whereContext) {
+        List<T> list = this.findByWhereContext(whereContext);
         super.deleteAll(list);
         return list.size();
     }
@@ -196,7 +187,26 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     public EntityManager getEntityManager(){
         return  this.entityManager;
     }
+
     public Class getEntityClass(){
         return  this.clazz;
+    }
+
+    public Map<String,Field> getFieldMap(){
+        if (ObjectUtils.isEmpty(this.fieldMap)){
+            this.fieldMap = MyClassUtil.getAllFields(clazz);
+        }
+        return this.fieldMap;
+    }
+
+    public CriteriaBuilder getBuilder(){
+        return this.builder;
+    }
+
+    public Root<T> getRoot(){
+        return this.root;
+    }
+    public  CriteriaQuery<T> getQuery(){
+        return this.builder.createQuery(clazz);
     }
 }

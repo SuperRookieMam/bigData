@@ -1,74 +1,65 @@
 package com.yhl.orm.dao;
 
 
+import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.PageInfo;
-import com.yhl.orm.componet.constant.UpdateFields;
-import com.yhl.orm.componet.constant.WhereCondition;
 import com.yhl.orm.componet.constant.WhereContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 /**
  *继承勒JpaRepository的接口，findN那些所有方法，
  *JpaSpecificationExecutor 的执行器所有方法
  * */
 @NoRepositoryBean
-public interface JpaBaseDao<T,ID extends Serializable>  extends JpaRepository<T,ID>, JpaSpecificationExecutor<T> {
+ public interface JpaBaseDao<T,ID extends Serializable>  extends JpaRepository<T,ID>, JpaSpecificationExecutor<T> {
 
-//    /**
-//     * 自定义接口
-//     * */
-//    public <T> T findById(ID id);
+     <T> T insertByEntity(T entity);
 
-    public <T> int updateByWhereCondition(UpdateFields updateFields, WhereCondition whereCondition, int flushSize);
+     <T> int insertByList(List<T> entitys);
 
-    /**
-     * 根据参数自定义查询
-     * */
-    public <T> List<T> findByParams(WhereCondition whereCondition);
+     <T> T updateByFieldContext(FieldContext fieldContext);
 
-    /**
-     * 根据一个实体插入
-     * */
-    public <T> T insertByEntity(T entity);
-    /**
-     * 批量插入
-     * */
-    public <T> int insertByList(List<T> entitys);
-    /**
-     * 根据实体跟新
-     * */
-    public <T> T updateByUpdateFields(UpdateFields updateFields);
+     <T> int updateByFieldContexts(FieldContext[] fieldContexts, int flushSize);
 
+     <T> int updateByFieldContextAndWhereContext(FieldContext fieldContext, WhereContext whereContext, int flushSize);
 
-    <T> T updateByEntity(T entity);
+     <T> List<T> findByWhereContext(WhereContext whereContext);
 
-    <T> T[] updateByEntitys(T[] entity);
-    /**
-     * 根据实体跟新
-     * @param  updateFieldss 要跟新的字段值
-     * @param  flushSize 多少条刷新一次
-     * */
-    public <T> int updateByUpdateFields(UpdateFields[] updateFieldss, int flushSize);
-    /**
-     * 根据条件查询条数
-     * */
-    public long findCountByWhereCondition(WhereCondition whereCondition);
+     <T> T updateByEntity(T entity);
 
+     <T> T[] updateByEntitys(T[] entity);
 
-    public <T> PageInfo<T> findPageByParams(WhereContext whereContext);
+     long findCountByWhereContext(WhereContext whereContext);
 
+     <T> PageInfo<T> findPageByWhereContext(WhereContext whereContext);
 
-    public void deleteById(ID id);
+     void deleteById(ID id);
 
-    public int deleteByWhereCondition(WhereCondition whereCondition) ;
-    public EntityManager getEntityManager();
-    public Class getEntityClass();
+     int deleteByWhereContext(WhereContext whereContext) ;
+
+     EntityManager getEntityManager();
+
+     Class getEntityClass();
+
+     Map<String,Field> getFieldMap();
+
+     CriteriaBuilder getBuilder();
+
+     Root<T> getRoot();
+
+     CriteriaQuery<T> getQuery();
+
     /**
      * JpaRepository的接口
      * List<T> findAll();

@@ -16,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class Expression implements Serializable {
+    private static final long serialVersionUID = -3564092744884569360L;
     //是否单列表达式（没有子表达式）0,1
     private int   unique;
     //子表表达式之间的连接符号 and or

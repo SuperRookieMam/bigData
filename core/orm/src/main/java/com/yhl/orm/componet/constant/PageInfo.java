@@ -9,8 +9,7 @@ import java.util.List;
 @Component
 @Data
 public class PageInfo<T> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2587523436890037070L;
     //当前页码
     private int pageNum;
     // 页面大小
