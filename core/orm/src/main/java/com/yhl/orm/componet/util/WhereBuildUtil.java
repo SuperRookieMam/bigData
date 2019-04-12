@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,7 +100,7 @@ public class WhereBuildUtil<T,ID extends Serializable>{
          return this;
     }
     public WhereBuildUtil<T,ID> addEq(String key,Object value){
-        Path  path =getPath(key);
+            Path  path =getPath(key);
             currentPredicateNew = path.getJavaType().getSimpleName().contains("Date")
                     ?builder.equal(path,getTime(value.toString()))
                     :builder.equal(path,value);

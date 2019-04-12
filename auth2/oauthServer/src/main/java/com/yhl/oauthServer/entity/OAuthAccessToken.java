@@ -78,8 +78,12 @@ public class OAuthAccessToken extends BaseEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "oath_granted_authority")
-    @JoinTable(name = "oath_granted_authority_map",
-            joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "client_id"),
+//    @JoinTable(name = "oath_granted_authority_map",
+//            inverseJoinColumns ={@JoinColumn(name = "client_id", referencedColumnName = "client_id"),
+//                    @JoinColumn(name = "role_info", referencedColumnName = "role_info")}/*,
+//            joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "client_id"),
+//                    @JoinColumn(name = "role_info", referencedColumnName = "role_info")}*/)
+    @CollectionTable(joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "client_id"),
                     @JoinColumn(name = "role_info", referencedColumnName = "role_info")})
     private Set<OAthGrantedAuthority> oAthGrantedAuthorities = Collections.emptySet();
 

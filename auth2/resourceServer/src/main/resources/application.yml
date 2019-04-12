@@ -1,0 +1,72 @@
+server:
+  port: 8003
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: zuulServer
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/yu?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&verifyServerCertificate=false&autoReconnct=true&autoReconnectForPools=true&allowMultiQueries=true
+    username: root
+    password: 123456
+    driverClassName: com.mysql.cj.jdbc.Driver
+security:
+  oauth2:
+    client:
+      client-id: zuul
+      client-secret: 123456
+      access-token-uri: http://localhost:8002/oauth/token
+      user-authorization-uri: http://localhost:8002/oauth/authorize
+      client-authentication-scheme: form
+      use-current-uriestablished: false
+      pre--redirect-uri: /login
+    resource:      #这配配置的是服务器的地址
+      token-info-uri: 'http://127.0.0.1:8002/oauth/check_token'
+eureka:
+  instance:
+    prefer-ip-address: true #注册时使用ip而不是主机名
+    instance-id: ${spring.application.name}(${spring.cloud.client.ip-address}:${server.port})
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8001/eureka/
+#      user-info-uri: '@user.info.url@'
+#    sso:
+      ## 这个地址是sso校验auth_code的地址
+#      login-path: '/a/login'
+#zuul:
+#  add-host-header: true
+#  ## 默认情况下，zuul 会将 authorization cookie set-cookie 这三个敏感的header不作为转发对象
+#  ## 在这里重新定义
+##  sensitive-headers:
+##  - cookie
+##  - set-cookie
+#  include-debug-header: true
+## 忽略单个服务实例：
+## ignored-services: microservice-service-provider
+## "*"表示忽略所有微服务，所有请求均不能通过服务的应用名称来访问
+## 例如：http://localhost:7000/tyrone/microservice-service-provider/provider/request/info是访问不通的
+## 如果不声明此属性，上述请求是可以访问成功的
+##  ignored-services: "*"
+##  网管路由配置
+#  routes:
+##    data: ## 数据中心的代理
+##      strip-prefix: true
+##      path: '/d/data/**'
+##      url: 'http://127.0.0.1:8081/'
+##    files: ## 文件服务器的代理
+##      strip-prefix: true
+##      path: '/d/files/**'
+##      url: 'http://127.0.0.1:8886/files'
+#    oauth2Server: ## 用户服务器的代理
+#      path: /u/**
+#      stripPrefix: true
+#      url: 'http://127.0.0.1:8002/'
+
+zuul:
+  routes:
+    users:
+      path: /u/**
+      stripPrefix: true
+      serviceId: oauth2Server
+

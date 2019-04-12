@@ -4,13 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 @Getter
 @Setter
-public class WhereContext  extends LinkedHashMap {
+public class WhereContext implements Serializable {
     private static final long serialVersionUID = 2999006637841047561L;
-    //value = "当前页", dataType = "Integer", required = true
+     //value = "当前页", dataType = "Integer", required = true
     private  Integer pageNum;
     //value = "分页大  小", dataType = "Integer", required = true
     private Integer pageSize;
@@ -22,4 +22,5 @@ public class WhereContext  extends LinkedHashMap {
     private ArrayList<Expression> expressions;
 
     private FieldContext fieldContext;
+
 }

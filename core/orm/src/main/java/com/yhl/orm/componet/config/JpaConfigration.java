@@ -68,7 +68,7 @@ public class JpaConfigration {
         //jpaProperties.getHibernateProperties(DataSource)
         Properties properties = new Properties();
         properties.setProperty("hibernate.ddl-auto", "update");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL57Dialect");
 //        //驼峰转下滑杠明明规则
         properties.setProperty("hibernate.naming.physical-strategy", "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl");
        /* properties.setProperty("base-package", "com.**.jpaDao");

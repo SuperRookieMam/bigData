@@ -16,6 +16,8 @@
         <module>securityCommon</module>
         <module>oauthCommon</module>
         <module>oauthServer</module>
+        <module>resourceServer</module>
+        <module>eurekaServer</module>
     </modules>
     <groupId>com.yhl</groupId>
     <version>1.0-SNAPSHOT</version>

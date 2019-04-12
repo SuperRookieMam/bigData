@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -24,6 +23,7 @@ public class UserApprovalServiceImpl extends BaseServiceImpl<UserApproval, Long>
     @Override
     @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public boolean addApprovals(Collection<Approval> approvals) {
+        revokeApprovals(approvals);
         List<UserApproval> userApprovals = UserApproval.approvalToUserApproval(approvals);
         ResultDto resultDto = insertByList(userApprovals);
         boolean flage = ((int) resultDto.getData()) == approvals.size();
@@ -33,21 +33,18 @@ public class UserApprovalServiceImpl extends BaseServiceImpl<UserApproval, Long>
     @Override
     @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public boolean revokeApprovals(Collection<Approval> approvals) {
-        Iterator<Approval> iterator = approvals.iterator();
-        int m = 0;
-        while (iterator.hasNext()) {
-            Approval approval = iterator.next();
-            Predicate predicate = getWhereBuildUtil().addEq(CLIENTID, approval.getClientId())
-                               .and()
-                               .addEq(USERID,approval.getUserId())
-                               .and()
-                               .addEq(SCOPE,approval.getScope())
-                               .and()
-                               .end();
+        approvals.forEach(ele -> {
+            Predicate predicate = getWhereBuildUtil()
+                    .addEq(CLIENTID, ele.getClientId())
+                    .and()
+                    .addEq(USERID,ele.getUserId())
+                    .and()
+                    .addEq(SCOPE,ele.getScope())
+                    .and()
+                    .end();
             deleteByPredicate(predicate);
-            m++;
-        }
-        return m == approvals.size();
+        });
+        return  true;
     }
 
     @Override

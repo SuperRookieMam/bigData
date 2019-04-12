@@ -2,6 +2,7 @@ package com.yhl.base.controller;
 
 
 import com.yhl.base.componet.dto.ResultDto;
+import com.yhl.base.componet.util.ParamUtil;
 import com.yhl.base.entity.BaseEntity;
 import com.yhl.base.service.BaseService;
 import com.yhl.orm.componet.constant.FieldContext;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class BaseController<T extends BaseEntity,ID extends Serializable>{
 
@@ -30,8 +32,8 @@ public class BaseController<T extends BaseEntity,ID extends Serializable>{
     @GetMapping(params = {"list"})
     @ResponseBody
     @ApiOperation(value="根据条件查询列表", notes="findByWhereContext")
-    public ResultDto findByWhereContext(@RequestBody WhereContext whereContext){
-        return  baseService.findByWhereContext(whereContext);
+    public ResultDto findByWhereContext(@RequestParam Map<String,Object> map){
+        return  baseService.findByWhereContext(ParamUtil.getWhereContext(map));
     }
 
     /**
@@ -40,8 +42,8 @@ public class BaseController<T extends BaseEntity,ID extends Serializable>{
     @GetMapping(params ={"page"})
     @ResponseBody
     @ApiOperation(value="根据条件分页查询", notes="findPageByWhereContext")
-    public ResultDto findPageByWhereContext(@RequestBody WhereContext whereContext){
-        return  baseService.findPageByWhereContext(whereContext);
+    public ResultDto findPageByWhereContext(@RequestParam  Map<String,Object> map){
+        return  baseService.findPageByWhereContext(ParamUtil.getWhereContext(map));
     }
 
 
@@ -120,7 +122,7 @@ public class BaseController<T extends BaseEntity,ID extends Serializable>{
     @PostMapping("where")
     @ResponseBody
     @ApiOperation(value="根据Where条件批量删除实体", notes="deleteByWhereContext")
-    public ResultDto deleteByWhereContext(@RequestParam WhereContext whereContext){
+    public ResultDto deleteByWhereContext(@RequestBody WhereContext whereContext){
         return  baseService.deleteByWhereContext(whereContext);
     }
 

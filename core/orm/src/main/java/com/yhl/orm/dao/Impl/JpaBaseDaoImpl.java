@@ -263,6 +263,7 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     public Root<T> getRoot(){
         return this.root;
     }
+
     public  CriteriaQuery<T> getQuery(){
         return this.builder.createQuery(clazz);
     }
