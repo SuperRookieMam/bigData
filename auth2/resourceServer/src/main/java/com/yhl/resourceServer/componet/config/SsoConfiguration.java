@@ -64,10 +64,8 @@ public class SsoConfiguration extends WebSecurityConfigurerAdapter {
         http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
         // 指定相关资源的权限校验过滤器
         http.addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class);
-        http.csrf()
-                .disable();
-        http.exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+        http.csrf() .disable();
+        http.exceptionHandling() .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
         http.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
         //此security使用在outheclient 的配置上
         http.apply(new OAuth2ClientAuthenticationConfigurer(oauth2SsoFilter()));

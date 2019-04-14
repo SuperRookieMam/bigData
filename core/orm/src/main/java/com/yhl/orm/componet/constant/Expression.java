@@ -38,7 +38,7 @@ public class Expression implements Serializable {
         }
         Assert.notNull(this.key, "key值不能为空");
         if (this.key.contains(".")) {
-            String[] keys = StringUtils.split(this.key, "\\.");
+            String[] keys = StringUtils.split(this.key, ".");
             assert keys != null;
             this.path = root.get(keys[0]);
             Class clazz = this.path.getJavaType();

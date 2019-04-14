@@ -16,52 +16,6 @@ public class OAuthAccessTokenConverter  implements AccessTokenConverter {
 
     private UserAuthenticationConverter userTokenConverter  ;
 
-    /*private final String TOKENID="tokenId";
-    private final String AUTHENTICATIONID="authenticationId";
-    private final String AUTHENTICATION="authentication";
-    private final String CLIENTID="clientId";
-    private final String USERNAME="userName";
-    private final String REFRESHTOKEN="refreshToken";
-    private final String ROLEINFO ="roleInfo";
-    private final String OATHGRANTEDAUTHORITIES ="oAthGrantedAuthorities";
-    private final String  TOKENTYPE ="tokenType";
-    private final String  EXPIRATION ="expiration";
-    private final String  SCOPE ="scope";*/
-    /*@Override
-    public Map<String, ?> convertAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
-        Map<String, Object> response = new HashMap<String, Object>();
-        OAuth2Request clientToken = authentication.getOAuth2Request();
-        OAuthAccessTokenDto oAuthAccessTokenDto =(OAuthAccessTokenDto)token;
-        response.put(TOKENID, oAuthAccessTokenDto.getTokenId());
-        response.put(AUTHENTICATIONID, oAuthAccessTokenDto.getAuthenticationId());
-        response.put(AUTHENTICATION, oAuthAccessTokenDto.getAuthentication());
-        response.put(CLIENTID, oAuthAccessTokenDto.getClientId());
-        response.put(USERNAME, oAuthAccessTokenDto.getUserName());
-        response.put(REFRESHTOKEN,  oAuthAccessTokenDto.getRefreshToken());
-        response.put(ROLEINFO, oAuthAccessTokenDto.getRoleInfo());
-        response.put(OATHGRANTEDAUTHORITIES,oAuthAccessTokenDto.getOAthGrantedAuthorities());
-        response.put(TOKENTYPE,oAuthAccessTokenDto.getTokenType());
-        response.put(EXPIRATION,oAuthAccessTokenDto.getExpiration());
-        response.put(SCOPE,oAuthAccessTokenDto.getScope());
-        return response;
-    }
-
-    @Override
-    public OAuth2AccessToken extractAccessToken(String value, Map<String, ?> map) {
-        OAuthAccessTokenDto oAuthAccessTokenDto =new OAuthAccessTokenDto();
-        oAuthAccessTokenDto.setTokenId(map.get(TOKENID).toString());
-        oAuthAccessTokenDto.setAuthenticationId(map.get(AUTHENTICATIONID).toString());
-        oAuthAccessTokenDto.setAuthentication(map.get(AUTHENTICATION).toString());
-        oAuthAccessTokenDto.setClientId(map.get(CLIENTID).toString());
-        oAuthAccessTokenDto.setUserName(map.get(USERNAME).toString());
-        oAuthAccessTokenDto.setRefreshToken(SerializationUtils.serialize(map.get(REFRESHTOKEN)));
-        oAuthAccessTokenDto.setRoleInfo((RoleInfoDto) map.get(ROLEINFO));
-        oAuthAccessTokenDto.setOAthGrantedAuthorities((Set<OAthGrantedAuthorityDto>) map.get(OATHGRANTEDAUTHORITIES));
-        oAuthAccessTokenDto.setTokenType(map.get(TOKENTYPE).toString());
-        oAuthAccessTokenDto.setExpiration((Date) map.get(EXPIRATION));
-        oAuthAccessTokenDto.setScope((Set<String>) map.get(SCOPE));
-        return oAuthAccessTokenDto;
-    }*/
 
     public void  setUserAuthenticationConverter(UserAuthenticationConverter userTokenConverter){
         this.userTokenConverter =userTokenConverter;

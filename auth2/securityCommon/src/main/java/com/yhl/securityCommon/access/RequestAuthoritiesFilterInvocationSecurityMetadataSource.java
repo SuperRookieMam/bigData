@@ -49,8 +49,13 @@ public class RequestAuthoritiesFilterInvocationSecurityMetadataSource implements
 
         final HttpServletRequest request = ((FilterInvocation) object).getRequest();
         String accesstoken =request.getHeader(ACCESSTOKEN)==null?request.getParameter(ACCESSTOKEN):request.getHeader(ACCESSTOKEN);
+        //如果获取不到access_token直接直接投票不能访问
         if (StringUtils.isEmpty(accesstoken)){
-            return Collections.emptyList();
+            RequestAuthorityAttribute requestAuthorityAttribute =new RequestAuthorityAttribute();
+            requestAuthorityAttribute.setAccessVisit(false);
+            List<ConfigAttribute> list =new ArrayList<>();
+            list.add(requestAuthorityAttribute);
+            return list;
         }
         //比如说属性菜单
         List<RequestAuthorityAttribute> allAttributes = requestAuthoritiesService.listAllAttributes(accesstoken);

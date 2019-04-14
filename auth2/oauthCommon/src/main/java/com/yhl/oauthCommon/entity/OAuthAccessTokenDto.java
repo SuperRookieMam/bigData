@@ -27,7 +27,7 @@ public class OAuthAccessTokenDto implements OAuth2AccessToken {
 
     private RoleInfoDto roleInfo;
 
-    private Set<OAthGrantedAuthorityDto> oAthGrantedAuthorities;
+   /* private Set<OAthGrantedAuthorityDto> oAthGrantedAuthorities;*/
 
     private String tokenType;
 

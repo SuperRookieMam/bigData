@@ -33,6 +33,8 @@ public class ResourceConfigure extends ResourceServerConfigurerAdapter {
 
     @Autowired
     OAuthAccessTokenService oAuthAccessTokenService;
+
+    private  static  final String  LOGIONPATH ="/login";
     /**
      * 配置对资源的保护模式
      */
@@ -42,10 +44,13 @@ public class ResourceConfigure extends ResourceServerConfigurerAdapter {
         super.configure(http);
         // 增加自定义的资源授权过滤器
         http.addFilterBefore(interceptor(), FilterSecurityInterceptor.class);
-        // 请求比较器,
+        //自定义拦截规则，要走资源服务器验证的请求，
+        // 除了login，其他的请求都需要携带access_token这个参数
         http.requestMatcher(new BearerTokenRequestMatcher());
     }
-
+    /**
+     * 投票器初始化
+     * */
     @Bean
     public FilterSecurityInterceptor interceptor() {
         // 添加过滤器
@@ -64,7 +69,7 @@ public class ResourceConfigure extends ResourceServerConfigurerAdapter {
         return interceptor;
     }
 
-    @Bean  //封装你想要的东西
+    @Bean  //投票需要获取的元素，比较等等
     public FilterInvocationSecurityMetadataSource securityMetadataSource() {
         RequestAuthoritiesFilterInvocationSecurityMetadataSource MetadataSource
                 = new RequestAuthoritiesFilterInvocationSecurityMetadataSource();
@@ -75,54 +80,46 @@ public class ResourceConfigure extends ResourceServerConfigurerAdapter {
     @Bean
     public RequestAuthoritiesService getRequestAuthoritiesService(){
         RequestAuthoritiesServiceImpl requestAuthoritiesService = new RequestAuthoritiesServiceImpl();
-        requestAuthoritiesService.setResourceServerTokenServices( RemoteTokenServicesConvertre());
+        requestAuthoritiesService.setUrl("http://127.0.0.1:8002/tokenGet/getCanVisit");
         return requestAuthoritiesService;
     }
 
-    public RemoteTokenServicesConvertre RemoteTokenServicesConvertre(){
-        RemoteTokenServicesConvertre remoteTokenServicesConvertre =new RemoteTokenServicesConvertre();
-        remoteTokenServicesConvertre.setResourceId(1l);
-        remoteTokenServicesConvertre.setResourceSecret("123456");
-        remoteTokenServicesConvertre.setUrl("http://127.0.0.1:8002/tokenGet/token");
-        remoteTokenServicesConvertre.setCheckTokenEndpointUrl("http://127.0.0.1:8002/oauth/check_token");
-        remoteTokenServicesConvertre.setClientId("zuul");
-        remoteTokenServicesConvertre.setClientSecret("123456");
-        return remoteTokenServicesConvertre ;
-    }
+
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         super.configure(resources);
         // 指定这是一个restful service,不会保存会话状态
-        resources.resourceId("zuul");
+        resources.resourceId("1");
         resources.stateless(true);
-
-        // 这里指定通过token store来校验token
-        // 当第三方服务通过access_token来访问服务时，
-        // 直接从token_store中获取相关信息，而不用再发起远程调用请求
-        //        为了节省时间我是直接从服务那边拷贝过来的
         resources.tokenServices( RemoteTokenServicesConvertre());
 
     }
+    //远程调用初始化
+    public RemoteTokenServicesConvertre RemoteTokenServicesConvertre(){
+        RemoteTokenServicesConvertre remoteTokenServicesConvertre =new RemoteTokenServicesConvertre();
+        remoteTokenServicesConvertre.setClientId("zuul");
+        remoteTokenServicesConvertre.setClientSecret("123456");
+        remoteTokenServicesConvertre.setResourceId(1l);
+        remoteTokenServicesConvertre.setResourceSecret("123456");
+        remoteTokenServicesConvertre.setUrl("http://127.0.0.1:8002/tokenGet/token");
+        remoteTokenServicesConvertre.setCheckTokenEndpointUrl("http://127.0.0.1:8002/oauth/check_token");
+        return remoteTokenServicesConvertre ;
+    }
 
 
-
-    //无状态请求比较
+    //除了     LOGIONPATH 路径 其他的资源全部要 走资源服务器验证
     static class BearerTokenRequestMatcher implements RequestMatcher {
-        //请求里面的header里面要有这个属性
-        private boolean matchHeader(HttpServletRequest request) {
-            String authHeader = request.getHeader("Authorization");
-            //获得请求类型，匹配的是什么 "scope";"Bearer";"OAuth2";"access_token";"token_type";"expires_in";
-            return StringUtils.startsWithIgnoreCase(authHeader, OAuth2AccessToken.BEARER_TYPE);
-        }
 
-        @Override//判断是参数请求还是头部请求，还是非法请求
+        @Override
         public boolean matches(HttpServletRequest request) {
-            return matchHeader(request) || matchParameter(request);
+            return matchParameter(request);
         }
-
-        //是不是参数请求
-        private boolean matchParameter(HttpServletRequest request) {
-            return !StringUtils.isEmpty(request.getParameter(OAuth2AccessToken.ACCESS_TOKEN));
+        public boolean matchParameter(HttpServletRequest request){
+            if (LOGIONPATH.equals(request.getRequestURI())){
+                return false;
+            }else {
+                return true;
+            }
         }
     }
 }

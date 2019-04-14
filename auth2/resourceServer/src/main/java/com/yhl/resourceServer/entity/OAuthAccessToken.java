@@ -76,11 +76,11 @@ public class OAuthAccessToken extends BaseEntity {
     @JoinColumn(name = "role_info")
     private RoleInfo roleInfo;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "oath_granted_authority")
-    @CollectionTable(joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "client_id"),
-            @JoinColumn(name = "role_info", referencedColumnName = "role_info")})
-    private Set<OAthGrantedAuthority> oAthGrantedAuthorities = Collections.emptySet();
+//    @ElementCollection(fetch = FetchType.EAGER)
+//    @Column(name = "oath_granted_authority")
+//    @CollectionTable(joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "client_id"),
+//            @JoinColumn(name = "role_info", referencedColumnName = "role_info")})
+//    private Set<OAthGrantedAuthority> oAthGrantedAuthorities = Collections.emptySet();
 
     @Column(name = "token_type")
     private String tokenType;
@@ -109,9 +109,9 @@ public class OAuthAccessToken extends BaseEntity {
         setScope(jsonArray.toString()) ;
     }
 
-    public Set<OAthGrantedAuthority> getOAthGrantedAuthorities() {
-        return oAthGrantedAuthorities;
-    }
+//    public Set<OAthGrantedAuthority> getOAthGrantedAuthorities() {
+//        return oAthGrantedAuthorities;
+//    }
 
 
     public static OAuthAccessTokenDto toOAuthAccessTokenDto(OAuthAccessToken oAuthAccessToken) {
@@ -126,7 +126,7 @@ public class OAuthAccessToken extends BaseEntity {
         oAuthAccessTokenDto.setRoleInfo(RoleInfo.toRoleInfoDto(oAuthAccessToken.getRoleInfo()));
         oAuthAccessTokenDto.setTokenType(oAuthAccessToken.getTokenType());
         oAuthAccessTokenDto.setExpiration(oAuthAccessToken.getExpiration());
-        oAuthAccessTokenDto.setOAthGrantedAuthorities(OAthGrantedAuthority.tooAthGrantedAuthorityDto(oAuthAccessToken.getOAthGrantedAuthorities()));
+      /*  oAuthAccessTokenDto.setOAthGrantedAuthorities(OAthGrantedAuthority.tooAthGrantedAuthorityDto(oAuthAccessToken.getOAthGrantedAuthorities()));*/
         return oAuthAccessTokenDto;
     }
 

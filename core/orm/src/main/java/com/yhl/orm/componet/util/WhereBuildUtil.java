@@ -336,8 +336,7 @@ public class WhereBuildUtil<T,ID extends Serializable>{
         Assert.notNull(key, "key值不能为空");
         Path path =null;
         if (key.contains(".")) {
-            String[] keys = StringUtils.split(key, "\\.");
-            assert keys != null;
+            String[] keys = StringUtils.split(key, ".");
             path = root.get(keys[0]);
             Class clazz = path.getJavaType();
             if (Set.class.isAssignableFrom(clazz)) {
