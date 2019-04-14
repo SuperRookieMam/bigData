@@ -16,7 +16,7 @@ public class InitController  {
 
     @GetMapping("1")
     @ResponseBody
-    @ApiOperation(value="根据实体插入", notes="insertByEntity")
+    @ApiOperation(value="初始化数据", notes="insertByEntity")
     public  String getAccessToken() throws Exception {
         initTable.init();
         return "初始化完毕";
