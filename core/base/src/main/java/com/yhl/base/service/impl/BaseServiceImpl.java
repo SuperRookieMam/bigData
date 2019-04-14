@@ -13,6 +13,7 @@ import com.yhl.orm.componet.util.WhereBuildUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.Predicate;
 import java.io.Serializable;
 import java.util.List;
@@ -107,32 +108,18 @@ public class BaseServiceImpl<T extends BaseEntity,ID extends Serializable> imple
     }
 
     @Override
-    public ResultDto deleteByPredicate(Predicate predicate) {
-        return ResultDto.success(baseDao.deleteByPredicate(predicate));
+    public ResultDto deleteByTypeQuery(TypedQuery<T> typedQuery) {
+        return ResultDto.success(baseDao.deleteByTypeQuery(typedQuery));
     }
     @Override
-    public ResultDto findbyPredicate(Predicate predicate){
-        return  ResultDto.success(baseDao.findbyPredicate(predicate));
+    public ResultDto findbyTypeQuery(TypedQuery<T> typedQuery){
+        return  ResultDto.success(baseDao.findbyTypeQuery(typedQuery));
     }
-
-    @Override
-    public ResultDto findGroupbyByPredicate(Predicate predicate, String[] groupbys){
-        return  ResultDto.success(baseDao.findGroupbyByPredicate( predicate, groupbys));
-    }
-
-    @Override
-    public ResultDto findOrderByPredicate(Predicate predicate, JSONArray sorts){
-        return  ResultDto.success(baseDao.findOrderByPredicate( predicate, sorts));
-    }
-    @Override
-    public ResultDto findOrderAndGroupByPredicate(Predicate predicate,String[] groupbys, JSONArray sorts){
-        return  ResultDto.success(baseDao.findOrderAndGroupByPredicate( predicate, groupbys,sorts));
-    }
-
     @Override
     public BaseDao<T,ID> getBaseDao(){
         return this.baseDao;
     }
+
     @Override
     public WhereBuildUtil<T,ID> getWhereBuildUtil(){
         return new WhereBuildUtil<T,ID>(this.baseDao);

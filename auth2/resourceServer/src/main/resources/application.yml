@@ -68,5 +68,5 @@ zuul:
     users:
       path: /u/**
       stripPrefix: true
-      serviceId: oauth2Server
+      url: http://127.0.0.1:8002/
 

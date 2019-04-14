@@ -12,7 +12,7 @@ public class ResourceServerClientDto implements Serializable {
     private String clientId;
 
 
-    private String resourceId;
+    private Long resourceId;
 
     private Long companyId;
 }

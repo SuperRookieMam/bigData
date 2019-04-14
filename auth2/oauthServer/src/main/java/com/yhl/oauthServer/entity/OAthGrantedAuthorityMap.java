@@ -19,6 +19,7 @@ import javax.persistence.*;
 public class OAthGrantedAuthorityMap extends BaseEntity {
 
     private static final long serialVersionUID = 4607647844190816999L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

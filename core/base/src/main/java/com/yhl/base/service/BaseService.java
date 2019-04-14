@@ -9,6 +9,7 @@ import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.WhereContext;
 import com.yhl.orm.componet.util.WhereBuildUtil;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.Predicate;
 import java.io.Serializable;
 import java.util.List;
@@ -43,15 +44,9 @@ public interface BaseService<T extends BaseEntity,ID extends Serializable> {
 
     ResultDto deleteByWhereContext(WhereContext whereContext);
 
-    ResultDto deleteByPredicate(Predicate predicate);
+    ResultDto deleteByTypeQuery(TypedQuery<T> typedQuery);
 
-    ResultDto findbyPredicate(Predicate predicate);
-
-    ResultDto findGroupbyByPredicate(Predicate predicate, String[] groupbys);
-
-    ResultDto findOrderByPredicate(Predicate predicate, JSONArray sorts);
-
-    ResultDto findOrderAndGroupByPredicate(Predicate predicate, String[] groupbys, JSONArray sorts);
+    ResultDto findbyTypeQuery(TypedQuery<T> typedQuery);
 
     BaseDao<T,ID> getBaseDao();
 

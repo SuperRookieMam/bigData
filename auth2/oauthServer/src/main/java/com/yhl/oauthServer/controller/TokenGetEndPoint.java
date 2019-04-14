@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +32,18 @@ public class TokenGetEndPoint {
     private  static final   String  RESOURCEID ="resourceId";
     @PostMapping("token")
     public String getAccessToken(@RequestBody Map<String,String> map) throws HttpRequestMethodNotSupportedException {
-       Predicate predicate = resourceServerService.getWhereBuildUtil().addEq(ID,map.get(RESOURCEID))
+       TypedQuery typedQuery = resourceServerService.getWhereBuildUtil().beginAnSeclect().beginAnWhere()
+                                                    .addEq(ID,map.get(RESOURCEID))
                                                     .and()
                                                     .addEq(SECRET,map.get(RESOURCESECRET))
                                                     .and()
-                                                    .end();
-        List<ResourceServer> resourceServer =(List<ResourceServer>)resourceServerService.findbyPredicate(predicate).getData();
+                                                    .end().buildTypedQuery();
+        List<ResourceServer> resourceServer =(List<ResourceServer>)resourceServerService.findbyTypeQuery(typedQuery).getData();
        if (resourceServer.isEmpty()){
             throw new HttpRequestMethodNotSupportedException("资源服务器不存在");
         }
-        Predicate predicate1 =  oAuthAccessTokenService.getWhereBuildUtil().addEq(TOKENID,map.get(TOKENID)).and().end();
-        List<OAuthAccessToken> list =(List<OAuthAccessToken> ) oAuthAccessTokenService.findbyPredicate(predicate1).getData();
+        TypedQuery typedQuery1 = oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnWhere().addEq(TOKENID,map.get(TOKENID)).and().end().buildTypedQuery();
+        List<OAuthAccessToken> list =(List<OAuthAccessToken> ) oAuthAccessTokenService.findbyTypeQuery(typedQuery1).getData();
         if (list.isEmpty()){
             throw new HttpRequestMethodNotSupportedException("token不存在");
         }

@@ -146,7 +146,7 @@ public class SsoConfiguration extends WebSecurityConfigurerAdapter {
 
     public  RemoteTokenServicesConvertre RemoteTokenServicesConvertre(){
         RemoteTokenServicesConvertre remoteTokenServicesConvertre =new RemoteTokenServicesConvertre();
-        remoteTokenServicesConvertre.setResourceId("zuul");
+        remoteTokenServicesConvertre.setResourceId(1l);
         remoteTokenServicesConvertre.setResourceSecret("123456");
         remoteTokenServicesConvertre.setUrl("http://127.0.0.1:8002/tokenGet/token");
         remoteTokenServicesConvertre.setCheckTokenEndpointUrl("http://127.0.0.1:8002/oauth/check_token");

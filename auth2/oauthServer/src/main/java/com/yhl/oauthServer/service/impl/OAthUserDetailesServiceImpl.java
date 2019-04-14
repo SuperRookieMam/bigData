@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 
@@ -25,9 +26,10 @@ public class OAthUserDetailesServiceImpl extends BaseServiceImpl<OAthUserDetaile
         }
         List<OAthUserDetailes> list = null;
         try {
-            Predicate predicate = getWhereBuildUtil().addEq(USERNAME,username).and().end();
-            list =(List<OAthUserDetailes>)findbyPredicate(predicate).getData();
+            TypedQuery typedQuery = getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(USERNAME,username).and().end().buildTypedQuery();
+            list =(List<OAthUserDetailes>)findbyTypeQuery(typedQuery).getData();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new UsernameNotFoundException("没找到用户名");
         }
         if (list.isEmpty()) {

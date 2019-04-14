@@ -27,7 +27,7 @@ public class RemoteTokenServicesConvertre extends RemoteTokenServices implements
     private RestTemplate template ;
 
 
-    private String resourceId;
+    private Long resourceId;
 
     private String resourceSecret;
 

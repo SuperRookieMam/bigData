@@ -30,11 +30,17 @@ import java.util.Map;
 public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaRepository<T,ID > implements JpaBaseDao<T,ID> {
 
     private final EntityManager entityManager;
+
     private Class clazz;
+
     private CriteriaBuilder builder ;
+
     private Root<T> root;
+
     private Map<String,Field> fieldMap;
+
     private String ID ="id";
+
     //父类没有不带参数的构造方法，这里手动构造父类
     public JpaBaseDaoImpl(Class<T> modelClass, EntityManager entityManager) {
         super(modelClass, entityManager);
@@ -189,57 +195,15 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
         return list.size();
     }
     @Override
-    public int deleteByPredicate(Predicate predicate) {
-        List<T> list = this.findbyPredicate(predicate);
+    public int deleteByTypeQuery(TypedQuery<T> typedQuery) {
+        List<T> list =  this.findbyTypeQuery(typedQuery);
         super.deleteAll(list);
         return list.size();
     }
     @Override
-   public List<T> findbyPredicate(Predicate predicate){
-       CriteriaQuery<T> query = this.builder.createQuery(clazz);
-       query.from(clazz);
-       query.where(predicate);
-       TypedQuery typedQuery =entityManager.createQuery(query);
+   public List<T> findbyTypeQuery(TypedQuery<T> typedQuery){
        return  typedQuery.getResultList();
     }
-
-    @Override
-    public List<T> findGroupbyByPredicate(Predicate predicate, String[] groupbys){
-        CriteriaQuery<T> query = this.builder.createQuery(clazz);
-        Root<T>  root =query.from(clazz);
-        query.where(predicate);
-        PresentWhereContextUtil.groupBy(query,root,groupbys);
-        TypedQuery typedQuery =entityManager.createQuery(query);
-        return  typedQuery.getResultList();
-    }
-
-    @Override
-    public List<T> findOrderByPredicate(Predicate predicate, JSONArray sorts){
-        CriteriaQuery<T> query = this.builder.createQuery(clazz);
-        Root<T>  root =query.from(clazz);
-        query.where(predicate);
-        Sort sort = PresentWhereContextUtil.getToSort(sorts);
-        if (sort != null) {
-            query.orderBy(QueryUtils.toOrders(sort, root, builder));
-        }
-        TypedQuery typedQuery =entityManager.createQuery(query);
-        return  typedQuery.getResultList();
-    }
-    @Override
-    public List<T> findOrderAndGroupByPredicate(Predicate predicate,String[] groupbys, JSONArray sorts){
-        CriteriaQuery<T> query = this.builder.createQuery(clazz);
-        Root<T>  root =query.from(clazz);
-        query.where(predicate);
-        PresentWhereContextUtil.groupBy(query,root,groupbys);
-        Sort sort = PresentWhereContextUtil.getToSort(sorts);
-        if (sort != null) {
-            query.orderBy(QueryUtils.toOrders(sort, root, builder));
-        }
-        TypedQuery typedQuery =entityManager.createQuery(query);
-        return  typedQuery.getResultList();
-    }
-
-
 
     public EntityManager getEntityManager(){
         return  this.entityManager;

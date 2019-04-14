@@ -49,7 +49,6 @@ public class InitTable  implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        init();
     }
     @Transactional(value = "jpaTransactionManager")
     public  void  init(){
@@ -116,7 +115,7 @@ public class InitTable  implements InitializingBean {
         ResourceServerClient resourceServerClient =new ResourceServerClient();
         resourceServerClient.setClientId("zuul");
         resourceServerClient.setCompanyId(company.getId());
-        resourceServerClient.setResourceId("zuul");
+        resourceServerClient.setResourceId(1l);
         resourceServerClientDao.insertByEntity(resourceServerClient);
 
         OAthGrantedAuthority oAthGrantedAuthority =new OAthGrantedAuthority();

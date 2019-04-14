@@ -29,7 +29,7 @@ public class ResourceServerClient extends BaseEntity {
     private String clientId;
 
     @Column(name = "resource_id")
-    private String resourceId;
+    private Long resourceId;
 
     @Column(name = "company_id")
     private Long companyId;

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -50,16 +51,10 @@ import java.util.Map;
 
      int deleteByWhereContext(WhereContext whereContext) ;
 
-    int deleteByPredicate(Predicate predicate);
+    int deleteByTypeQuery(TypedQuery<T> typedQuery);
 
-    List<T> findbyPredicate(Predicate predicate);
+    List<T> findbyTypeQuery(TypedQuery<T> typedQuery);
 
-
-    List<T> findGroupbyByPredicate(Predicate predicate, String[] groupbys);
-
-    List<T> findOrderByPredicate(Predicate predicate, JSONArray sorts);
-
-    List<T> findOrderAndGroupByPredicate(Predicate predicate, String[] groupbys, JSONArray sorts);
 
     EntityManager getEntityManager();
 
