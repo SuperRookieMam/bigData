@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <properties>
+        <!--文件存储路径-->
+        <property name="LOG_HOME">E:/logs</property>
+        <!--文件名会加上日期等后缀-->
+        <property name="FILE_NAME">mylog</property>
+        <!--日志级别-->
+        <property name="cur_Level">debug</property>
+    </properties>
+
+    <!--Appenders：输出源，用于定义日志输出的地方 -->
+    <Appenders>
+        <!--Console：控制台输出源是将日志打印到控制台上，开发的时候一般都会配置，以便调试-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %l - %msg%n" />
+        </Console>
+        <!--RollingRandomAccessFile: 该输出源也是写入到文件，
+            不同的是比File更加强大，可以指定当文件达到一定大小（如20MB）时，
+            另起一个文件继续写入日志，另起一个文件就涉及到新文件的名字命名规则，
+            因此需要配置文件命名规则
+            1.fileName 指定当前日志文件的位置和文件名称
+            2.filePattern 指定当发生Rolling时，文件的转移和重命名规则
+            3.DefaultRolloverStrategy 指定最多保存的文件个数
+            4.TimeBasedTriggeringPolicy 这个配置需要和filePattern结合使用，
+            注意filePattern中配置的文件重命名规则是${FILE_NAME}-
+            %d{yyyy-MM-dd HH-mm}-%i，最小的时间粒度是mm，即分钟
+            5.TimeBasedTriggeringPolicy指定的size是1，
+            结合起来就是每1分钟生成一个新文件。如果改成%d{yyyy-MM-dd HH}，
+            最小粒度为小时，则每一个小时生成一个文件
+             -->
+        <RollingRandomAccessFile name="RollingRandomAccessFile"
+                                 fileName="${LOG_HOME}/${FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <!--PatternLayout：控制台或文件输出源（Console、File、RollingRandomAccessFile）都必须包含一个-->
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %l - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+        <!--NoSql：MongoDb, 输出到MongDb数据库中-->
+    </Appenders>
+    <!--Loggers：日志器
+                日志器分根日志器Root和自定义日志器，当根据日志名字获取不到指定的日志器时就使用Root作为默认的日志器，
+                自定义时需要指定每个Logger的名称name（对于命名可以以包名作为日志的名字，不同的包配置不同的级别等），
+                日志级别level，相加性additivity（是否继承下面配置的日志器），
+                对于一般的日志器（如Console、File、RollingRandomAccessFile）
+                一般需要配置一个或多个输出源AppenderRef；
+                每个logger可以指定一个level（TRACE, DEBUG, INFO, WARN, ERROR, ALL or OFF），
+                不指定时level默认为ERROR-->
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingRandomAccessFile" />
+        </Root>
+        <!--additivity指定是否同时输出log到父类的appender，缺省为true-->
+        <Logger name="mylog" level="${cur_Level}" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+    </Loggers>
+</Configuration>
