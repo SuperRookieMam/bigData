@@ -19,7 +19,7 @@ import java.io.IOException;
  * */
 public class JobSubmit {
 
-    public static<M extends Mapper,R extends Reducer> boolean  submitJob(String jarPath, Class<M> mappclass, Class<R> reduceclass) throws IOException, ClassNotFoundException, InterruptedException {
+    public static<M extends Mapper,R extends Reducer> boolean  submitJob(String jarPath, Class<M> mappclass, Class<R> reduceclass,int num,String sourcePath,String destination) throws IOException, ClassNotFoundException, InterruptedException {
         Job job =Job.getInstance(SpringUtil.getBean("yarnConfiguration",Configuration.class));
         //获得资源文件(.class文件)所在路径
         job.setJar(jarPath);
@@ -33,10 +33,10 @@ public class JobSubmit {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
         //4.封装本次job要处理的输入数据集所在路径
-        FileInputFormat.setInputPaths(job,new Path("/"));
-        FileOutputFormat.setOutputPath(job,new Path("/kk"));//输出路径必须不存在
+        FileInputFormat.setInputPaths(job,new Path(sourcePath));
+        FileOutputFormat.setOutputPath(job,new Path(destination));//输出路径必须不存在
         //5.封装参数，想要启动的reduce task 的数量，//可以不用指定，map 不用指定，reduce可以指定
-        job.setNumReduceTasks(2);
+        job.setNumReduceTasks(num);
         boolean b =job.waitForCompletion(true);
         if (b){
             System.out.println("执行成功");

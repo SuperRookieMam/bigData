@@ -11,6 +11,8 @@ public class MappreduceApplication {
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(MappreduceApplication.class, args);
-        JobSubmit.submitJob("C:\\Users\\Administrator\\Desktop\\1.jar", MapReduceOfMap.class, MapReduceOfReduce.class);
+        JobSubmit.submitJob("F:/1.jar", MapReduceOfMap.class,
+                            MapReduceOfReduce.class,3,"/test/",
+                   "/kk");
     }
 }

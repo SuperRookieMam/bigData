@@ -4,14 +4,12 @@ import com.yhl.base.service.impl.BaseServiceImpl;
 import com.yhl.oauthCommon.entity.OAthUserDetailesDto;
 import com.yhl.oauthServer.entity.OAthUserDetailes;
 import com.yhl.oauthServer.service.OAthUserDetailesService;
-import com.yhl.orm.componet.util.WhereBuildUtil;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.Predicate;
 import java.util.List;
 
 @Service
