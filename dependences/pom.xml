@@ -54,6 +54,7 @@
         <spark.version>2.3.3</spark.version>
         <scala.version>2.11.8</scala.version>
         <manven.scala.version>2.15.1</manven.scala.version>
+        <elserch.version>6.7.1</elserch.version>
     </properties>
     <dependencies>
         <dependency>
@@ -243,6 +244,26 @@
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>${manven.scala.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>transport</artifactId>
+                <version>${elserch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elserch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elserch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.plugin</groupId>
+                <artifactId>transport-netty4-client</artifactId>
+                <version>${elserch.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
