@@ -17,6 +17,7 @@
         <module>hadoop</module>
         <module>spark</module>
         <module>elasticSerch</module>
+        <module>hive</module>
     </modules>
     <packaging>pom</packaging>
 
