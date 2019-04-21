@@ -17,9 +17,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,32 +90,32 @@ public class PresentWhereContextUtil {
                     break;
                 case "lt":
                     predicate = path.getJavaType().getSimpleName().contains("Date")
-                                ?builder.lessThan(path,getTime(value.toString()))
+                                ?builder.lessThan(path,getTime(value.toString(),path))
                                 :builder.lt(path,new BigDecimal(value.toString()));
                     break;
                 case "le":
                     predicate = path.getJavaType().getSimpleName().contains("Date")
-                            ?builder.lessThanOrEqualTo(path,getTime(value.toString()))
+                            ?builder.lessThanOrEqualTo(path,getTime(value.toString(),path))
                             :builder.le(path,new BigDecimal(value.toString()));
                     break;
                 case "gt":
                     predicate = path.getJavaType().getSimpleName().contains("Date")
-                            ?builder.greaterThan(path,getTime(value.toString()))
+                            ?builder.greaterThan(path,getTime(value.toString(),path))
                             :builder.gt(path,new BigDecimal(value.toString()));
                     break;
                 case "ge":
                     predicate = path.getJavaType().getSimpleName().contains("Date")
-                            ?builder.greaterThanOrEqualTo(path,getTime(value.toString()))
+                            ?builder.greaterThanOrEqualTo(path,getTime(value.toString(),path))
                             :builder.ge(path,new BigDecimal(value.toString()));
                     break;
                 case "eq":
                     predicate = path.getJavaType().getSimpleName().contains("Date")
-                            ?builder.equal(path,getTime(value.toString()))
+                            ?builder.equal(path,getTime(value.toString(),path))
                             :builder.equal(path,value);
                     break;
                 case "notEq":
                     predicate = path.getJavaType().getSimpleName().contains("Date")
-                            ?builder.notEqual(path,getTime(value.toString()))
+                            ?builder.notEqual(path,getTime(value.toString(),path))
                             :builder.notEqual(path,value);
                     break;
                 case "in":
@@ -176,12 +182,28 @@ public class PresentWhereContextUtil {
      * @param timeStr 只能时'yyyy-MM-dd'或者'yyyy-MM-dd HH:mm:ss'
      *
      * */
-    public  static LocalDateTime getTime(String timeStr){
+    public  static Comparable  getTime(String timeStr,Path path){
+        Class timeclass =path.getJavaType();
+        Comparable comparable=null;
         String pattern= timeStr.matches("\\d{4}-\\d{2}-\\{d}{2}\\s+\\d{2}:\\d{2}:\\d{2}")?
-                         "yyyy-MM-dd HH:mm:ss":"yyyy-MM-dd";
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-            LocalDateTime localDateTime =  LocalDateTime.parse(timeStr,formatter);
-        return  localDateTime;
+                "yyyy-MM-dd HH:mm:ss":"yyyy-MM-dd";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        try {
+            if (LocalDateTime.class.isAssignableFrom(timeclass)){
+                comparable=  LocalDateTime.parse(timeStr,formatter);
+            }else if (LocalDate.class.isAssignableFrom(timeclass)){
+                comparable =LocalDate.parse(timeStr,formatter);
+            }else if(Date.class.isAssignableFrom(timeclass)){
+                comparable =new SimpleDateFormat(pattern).parse(timeStr);
+            }else if (ZonedDateTime.class.isAssignableFrom(timeclass)){
+                LocalDateTime localDateTime =   LocalDateTime.parse(timeStr,formatter);
+                ZoneId zone = ZoneId.systemDefault();
+                comparable = localDateTime.atZone(zone);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return  comparable;
 
     }
 

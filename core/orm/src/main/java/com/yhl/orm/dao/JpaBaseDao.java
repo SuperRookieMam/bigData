@@ -55,7 +55,6 @@ import java.util.Map;
 
     List<T> findbyTypeQuery(TypedQuery<T> typedQuery);
 
-
     EntityManager getEntityManager();
 
      Class getEntityClass();
@@ -67,25 +66,4 @@ import java.util.Map;
      Root<T> getRoot();
 
      CriteriaQuery<T> getQuery();
-
-    /**
-     * JpaRepository的接口
-     * List<T> findAll();
-     * List<T> findAll(Sort var1);
-     * List<T> findAll(Iterable<ID> var1);
-     * <S extends T> List<S> save(Iterable<S> var1);
-     * void flush();
-     * T saveAndFlush(T var1);
-     * void deleteInBatch(Iterable<T> var1);
-     * void deleteAllInBatch();
-     * T getOne(ID var1);
-     * */
-    /**
-     * JpaSpecificationExecutor 的接口
-     * T findOne(Specification<T> var1);
-     * List<T> findAll(Specification<T> var1);
-     * Page<T> findAll(Specification<T> var1, Pageable var2);
-     * List<T> findAll(Specification<T> var1, Sort var2);
-     * int count(Specification<T> var1);
-     * */
 }

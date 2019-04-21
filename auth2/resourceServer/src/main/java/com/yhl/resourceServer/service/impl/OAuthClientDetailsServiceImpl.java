@@ -1,6 +1,8 @@
 package com.yhl.resourceServer.service.impl;
 
 import com.yhl.base.service.impl.BaseServiceImpl;
+import com.yhl.orm.componet.util.PredicateBuilder;
+import com.yhl.orm.componet.util.WhereBuilder;
 import com.yhl.resourceServer.entity.OAuthClientDetails;
 import com.yhl.resourceServer.service.OAuthClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -16,7 +18,12 @@ public class OAuthClientDetailsServiceImpl extends BaseServiceImpl<OAuthClientDe
     private final String CLIENTID = "clientId";
     @Override
     public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
-        TypedQuery typedQuery =getWhereBuildUtil().beginAnSeclect().beginAnWhere().addEq(CLIENTID, clientId).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+
+        TypedQuery typedQuery =whereBuilder.where(
+                        predicateBuilder.addEq(CLIENTID, clientId).end()
+                                     ).buildTypeQuery();
         List<OAuthClientDetails> clientDetails = (List<OAuthClientDetails>) findbyTypeQuery(typedQuery).getData();
         if (clientDetails.isEmpty()) {
             throw new ClientRegistrationException("客户端不存在");

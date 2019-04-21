@@ -7,6 +7,8 @@ import com.yhl.oauthServer.entity.OAuthAccessToken;
 import com.yhl.oauthServer.entity.OAuthRefreshToken;
 import com.yhl.oauthServer.service.OAuthAccessTokenService;
 import com.yhl.oauthServer.service.OAuthRefreshTokenService;
+import com.yhl.orm.componet.util.PredicateBuilder;
+import com.yhl.orm.componet.util.WhereBuilder;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -19,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,7 +53,11 @@ public class TokenStoreConverter implements TokenStore {
     @Override
     public OAuth2Authentication readAuthentication(String token) {
         OAuth2Authentication oAuth2Authentication = null;
-        TypedQuery typedQuery = oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnWhere().addEq(TOKENID, token).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder.where(
+                    predicateBuilder.addEq(TOKENID, token).end()
+                        ).buildTypeQuery();
         List<OAuthAccessToken> oAuthAccessTokens =(List<OAuthAccessToken> )oAuthAccessTokenService.findbyTypeQuery(typedQuery).getData();
         if (!oAuthAccessTokens.isEmpty()) {
             String authenticationStr = oAuthAccessTokens.get(0).getAuthentication();
@@ -76,7 +81,11 @@ public class TokenStoreConverter implements TokenStore {
     @Override
     public OAuth2AccessToken readAccessToken(String tokenValue) {
         OAuth2AccessToken oAuth2AccessToken = null;
-        TypedQuery typedQuery =  oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(TOKENID, tokenValue).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder.where(
+                                predicateBuilder.addEq(TOKENID, tokenValue).end()
+                                    ).buildTypeQuery();
         List<OAuthAccessToken> oAuthAccessTokens = (List<OAuthAccessToken>)oAuthAccessTokenService.findbyTypeQuery(typedQuery).getData();
         if (!oAuthAccessTokens.isEmpty()) {
             OAuthAccessToken oAuthAccessToken = oAuthAccessTokens.get(0);
@@ -94,7 +103,11 @@ public class TokenStoreConverter implements TokenStore {
 
     @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public void removeAccessToken(String tokenId) {
-        TypedQuery typedQuery =oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(TOKENID, tokenId).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery =whereBuilder.where(
+                            predicateBuilder.addEq(TOKENID, tokenId).end()
+                             ).buildTypeQuery();
         oAuthAccessTokenService.deleteByTypeQuery(typedQuery);
     }
 
@@ -109,7 +122,11 @@ public class TokenStoreConverter implements TokenStore {
     @Override
     public OAuth2RefreshToken readRefreshToken(String tokenValue) {
         OAuth2RefreshToken refreshToken = null;
-        TypedQuery typedQuery =oAuthRefreshTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(TOKENID,  tokenValue).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthRefreshTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder.where(
+                predicateBuilder.addEq(TOKENID,  tokenValue).end()
+        ).buildTypeQuery();
         List<OAuthRefreshToken> oAuthRefreshTokens =(List<OAuthRefreshToken>)oAuthRefreshTokenService.findbyTypeQuery(typedQuery).getData();
         if (!oAuthRefreshTokens.isEmpty()) {
             refreshToken = OAuthRefreshToken.toOAuthRefreshTokenDto(oAuthRefreshTokens.get(0));
@@ -126,7 +143,11 @@ public class TokenStoreConverter implements TokenStore {
     @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public OAuth2Authentication readAuthenticationForRefreshToken(String tokenValue) {
         OAuth2Authentication authentication = null;
-        TypedQuery typedQuery =oAuthRefreshTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(TOKENID,  tokenValue).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthRefreshTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder.where(
+                predicateBuilder.addEq(TOKENID,  tokenValue).end()
+        ).buildTypeQuery();
         List<OAuthRefreshToken> oAuthRefreshTokens =(List<OAuthRefreshToken>)oAuthRefreshTokenService.findbyTypeQuery(typedQuery).getData();
         if (!oAuthRefreshTokens.isEmpty()) {
             String authenticationStr = oAuthRefreshTokens.get(0).getAuthentication();
@@ -143,7 +164,11 @@ public class TokenStoreConverter implements TokenStore {
 
     @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public void removeRefreshToken(String tokenValue) {
-        TypedQuery typedQuery =oAuthRefreshTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(TOKENID,tokenValue).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthRefreshTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder.where(
+                predicateBuilder.addEq(TOKENID,  tokenValue).end()
+        ).buildTypeQuery();
         oAuthRefreshTokenService.deleteByTypeQuery(typedQuery);
     }
 
@@ -156,7 +181,11 @@ public class TokenStoreConverter implements TokenStore {
 
     @Transactional(value = "jpaTransactionManager", rollbackFor = Exception.class)
     public void removeAccessTokenUsingRefreshToken(String refreshToken) {
-        TypedQuery typedQuery =oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(REFRESHTOKEN,  refreshToken).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder.where(
+                predicateBuilder.addEq(REFRESHTOKEN,  refreshToken).end()
+        ).buildTypeQuery();
         oAuthAccessTokenService.deleteByTypeQuery(typedQuery);
     }
 
@@ -170,7 +199,12 @@ public class TokenStoreConverter implements TokenStore {
         //提取authentication请求的参数string作为QAuthAccessToken 的唯一Id
         //{username:xxxxx,client_id:xxxx,scope:xxxxx}
         String key = authenticationKeyGenerator.extractKey(authentication);
-        TypedQuery typedQuery =oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(AUTHENTICATIONID, key).and().end().buildTypedQuery();
+
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery =whereBuilder.where(
+                 predicateBuilder.addEq(AUTHENTICATIONID, key).end()
+                    ).buildTypeQuery();
         List<OAuthAccessToken> oAuthAccessTokens =(List<OAuthAccessToken>)oAuthAccessTokenService.findbyTypeQuery(typedQuery).getData();
         if (oAuthAccessTokens.size() > 0) {
             auth2AccessToken  = OAuthAccessToken.toOAuthAccessTokenDto(oAuthAccessTokens.get(0));
@@ -181,11 +215,15 @@ public class TokenStoreConverter implements TokenStore {
     @Override
     public Collection<OAuth2AccessToken> findTokensByClientIdAndUserName(String clientId, String userName) {
         List<OAuth2AccessToken> accessTokens = new ArrayList<OAuth2AccessToken>();
-        TypedQuery typedQuery =oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(CLIENTID, clientId)
-                                                       .and()
-                                                       .addEq(USERNAME, userName)
-                                                       .and()
-                                                       .end().buildTypedQuery();
+
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery =whereBuilder.where(
+                predicateBuilder.addEq(USERNAME, userName)
+                                .and()
+                                .addEq(CLIENTID, clientId)
+                                .end()
+                                    ).buildTypeQuery();
         List<OAuthAccessToken> oAuthAccessTokens =(List<OAuthAccessToken>)oAuthAccessTokenService.findbyTypeQuery(typedQuery).getData();
         for (int i = 0; i < oAuthAccessTokens.size(); i++) {
             accessTokens.add(OAuthAccessToken.toOAuthAccessTokenDto(oAuthAccessTokens.get(i)) );
@@ -196,7 +234,11 @@ public class TokenStoreConverter implements TokenStore {
     @Override
     public Collection<OAuth2AccessToken> findTokensByClientId(String clientId) {
         List<OAuth2AccessToken> accessTokens = new ArrayList<OAuth2AccessToken>();
-        TypedQuery typedQuery =oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(CLIENTID, clientId).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery =whereBuilder.where(
+                        predicateBuilder.addEq(CLIENTID, clientId).end()
+                        ).buildTypeQuery();
         List<OAuthAccessToken> oAuthAccessTokens =(List<OAuthAccessToken>)oAuthAccessTokenService.findbyTypeQuery(typedQuery).getData();
         for (int i = 0; i < oAuthAccessTokens.size(); i++) {
             accessTokens.add(OAuthAccessToken.toOAuthAccessTokenDto(oAuthAccessTokens.get(i)));

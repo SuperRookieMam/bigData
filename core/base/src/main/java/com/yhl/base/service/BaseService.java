@@ -1,16 +1,14 @@
 package com.yhl.base.service;
 
 
-import com.alibaba.fastjson.JSONArray;
 import com.yhl.base.componet.dto.ResultDto;
 import com.yhl.base.dao.BaseDao;
 import com.yhl.base.entity.BaseEntity;
 import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.WhereContext;
-import com.yhl.orm.componet.util.WhereBuildUtil;
+import com.yhl.orm.componet.util.WhereBuilder;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.Predicate;
 import java.io.Serializable;
 import java.util.List;
 
@@ -50,5 +48,5 @@ public interface BaseService<T extends BaseEntity,ID extends Serializable> {
 
     BaseDao<T,ID> getBaseDao();
 
-    WhereBuildUtil<T,ID> getWhereBuildUtil();
+    WhereBuilder<T,ID> getWhereBuilder();
 }

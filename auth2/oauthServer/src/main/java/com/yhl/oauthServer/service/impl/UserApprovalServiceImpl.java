@@ -4,6 +4,8 @@ import com.yhl.base.componet.dto.ResultDto;
 import com.yhl.base.service.impl.BaseServiceImpl;
 import com.yhl.oauthServer.entity.UserApproval;
 import com.yhl.oauthServer.service.UserApprovalService;
+import com.yhl.orm.componet.util.PredicateBuilder;
+import com.yhl.orm.componet.util.WhereBuilder;
 import org.springframework.security.oauth2.provider.approval.Approval;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,14 +42,16 @@ public class UserApprovalServiceImpl extends BaseServiceImpl<UserApproval, Long>
        int flage =0;
         while (iterator.hasNext()){
             Approval ele =iterator.next();
-            TypedQuery typedQuery = getWhereBuildUtil().beginAnSeclect().beginAnWhere()
-                    .addEq(CLIENTID, ele.getClientId())
-                    .and()
-                    .addEq(USERID,ele.getUserId())
-                    .and()
-                    .addEq(SCOPE,ele.getScope())
-                    .and()
-                    .end().buildTypedQuery();
+            WhereBuilder whereBuilder =getWhereBuilder();
+            PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+            TypedQuery typedQuery = whereBuilder.where(
+                        predicateBuilder.addEq(CLIENTID, ele.getClientId())
+                                        .and()
+                                        .addEq(USERID,ele.getUserId())
+                                        .and()
+                                        .addEq(SCOPE,ele.getScope())
+                                        .end()
+                         ).buildTypeQuery();
             deleteByTypeQuery(typedQuery);
             flage ++;
         }
@@ -56,11 +60,15 @@ public class UserApprovalServiceImpl extends BaseServiceImpl<UserApproval, Long>
 
     @Override
     public Collection<Approval> getApprovals(String userId, String clientId) {
-        TypedQuery typedQuery =getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(USERID,userId)
-                                                 .and()
-                                                 .addEq(CLIENTID,clientId)
-                                                 .and()
-                                                 .end().buildTypedQuery();
+        WhereBuilder whereBuilder =getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery =whereBuilder.where(
+                                predicateBuilder
+                                        .addEq(USERID,userId)
+                                        .and()
+                                        .addEq(CLIENTID,clientId)
+                                        .end()
+                                      ).buildTypeQuery();
         ResultDto resultDto = findbyTypeQuery(typedQuery);
         List<Approval> approvals = UserApproval.userApprovalToApproval((List<UserApproval>) resultDto.getData());
         return approvals;

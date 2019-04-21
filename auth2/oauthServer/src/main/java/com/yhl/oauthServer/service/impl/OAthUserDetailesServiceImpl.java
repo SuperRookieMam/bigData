@@ -4,6 +4,8 @@ import com.yhl.base.service.impl.BaseServiceImpl;
 import com.yhl.oauthCommon.entity.OAthUserDetailesDto;
 import com.yhl.oauthServer.entity.OAthUserDetailes;
 import com.yhl.oauthServer.service.OAthUserDetailesService;
+import com.yhl.orm.componet.util.PredicateBuilder;
+import com.yhl.orm.componet.util.WhereBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,11 @@ public class OAthUserDetailesServiceImpl extends BaseServiceImpl<OAthUserDetaile
         }
         List<OAthUserDetailes> list = null;
         try {
-            TypedQuery typedQuery = getWhereBuildUtil().beginAnSeclect().beginAnSeclect().beginAnWhere().addEq(USERNAME,username).and().end().buildTypedQuery();
+            WhereBuilder whereBuilder =getWhereBuilder();
+            PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+            TypedQuery typedQuery =  whereBuilder.where(
+                                     predicateBuilder.addEq(USERNAME,username).end())
+                    .buildTypeQuery();
             list =(List<OAthUserDetailes>)findbyTypeQuery(typedQuery).getData();
         } catch (Exception e) {
             e.printStackTrace();

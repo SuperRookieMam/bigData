@@ -8,7 +8,8 @@ import com.yhl.oauthServer.entity.OAuthClientDetails;
 import com.yhl.oauthServer.entity.UserRole;
 import com.yhl.oauthServer.service.OAuthClientDetailsService;
 import com.yhl.oauthServer.service.UserRoleService;
-import com.yhl.orm.componet.util.WhereBuildUtil;
+import com.yhl.orm.componet.util.PredicateBuilder;
+import com.yhl.orm.componet.util.WhereBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.Predicate;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -293,19 +293,22 @@ public class AuthorizationServerTokenService implements AuthorizationServerToken
         token.setUserName(authentication.isClientOnly() ? null : authentication.getName());
         token.setTokenId(UUID.randomUUID().toString());
         token.setTokenType(TOKENTYPE);
+
         //获取当前client的所属公司Id
-        TypedQuery  typedQuery = oAuthClientDetailsService.getWhereBuildUtil()
-                                          .beginAnSeclect().beginAnWhere()
-                                          .addEq(CLIENTID,authentication.getOAuth2Request().getClientId())
-                                          .and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthClientDetailsService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery  typedQuery =whereBuilder.where(
+                             predicateBuilder.addEq(CLIENTID,authentication.getOAuth2Request().getClientId()).end()
+                          ).buildTypeQuery();
         List<OAuthClientDetails> oAuthClientDetails =(List<OAuthClientDetails> ) oAuthClientDetailsService.findbyTypeQuery(typedQuery).getData();
+
+
        //查询出当前用户在对应公司的角色,并设置此token对应的角色
-        TypedQuery  typedQuery1 =userRoleService.getWhereBuildUtil()
-                                 .beginAnSeclect().beginAnWhere()
-                                 .and()
-                                 .addEq(COMPANYID,oAuthClientDetails.isEmpty()?0:oAuthClientDetails.get(0).getCompanyId())
-                                 .and()
-                                 .end().buildTypedQuery();
+        WhereBuilder whereBuilder1 =userRoleService.getWhereBuilder();
+        PredicateBuilder predicateBuilder1 =whereBuilder1.getPredicateBuilder();
+        TypedQuery  typedQuery1 =whereBuilder1.where(
+                predicateBuilder1.addEq(COMPANYID,oAuthClientDetails.isEmpty()?0:oAuthClientDetails.get(0).getCompanyId()).end()
+                ).buildTypeQuery();
         List<UserRole> list =( List<UserRole> ) userRoleService.findbyTypeQuery(typedQuery1).getData();
         token.setRoleInfo(list.size() > 0 ? list.get(0).getRoleInfo() : null);
         OAuthAccessTokenDto dto = OAuthAccessToken.toOAuthAccessTokenDto(token);

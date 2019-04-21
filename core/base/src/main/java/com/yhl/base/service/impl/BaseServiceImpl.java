@@ -1,7 +1,6 @@
 package com.yhl.base.service.impl;
 
 
-import com.alibaba.fastjson.JSONArray;
 import com.yhl.base.componet.dto.ResultDto;
 import com.yhl.base.dao.BaseDao;
 import com.yhl.base.entity.BaseEntity;
@@ -9,12 +8,11 @@ import com.yhl.base.service.BaseService;
 import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.PageInfo;
 import com.yhl.orm.componet.constant.WhereContext;
-import com.yhl.orm.componet.util.WhereBuildUtil;
+import com.yhl.orm.componet.util.WhereBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.Predicate;
 import java.io.Serializable;
 import java.util.List;
 
@@ -121,7 +119,7 @@ public class BaseServiceImpl<T extends BaseEntity,ID extends Serializable> imple
     }
 
     @Override
-    public WhereBuildUtil<T,ID> getWhereBuildUtil(){
-        return new WhereBuildUtil<T,ID>(this.baseDao);
+    public WhereBuilder<T,ID> getWhereBuilder(){
+        return new WhereBuilder<>(this.baseDao);
     }
 }

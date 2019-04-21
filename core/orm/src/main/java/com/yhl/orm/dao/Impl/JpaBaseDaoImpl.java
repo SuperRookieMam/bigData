@@ -2,6 +2,7 @@ package com.yhl.orm.dao.Impl;
 
 
 import com.alibaba.fastjson.JSONArray;
+import com.yhl.orm.componet.constant.Expression;
 import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.PageInfo;
 import com.yhl.orm.componet.constant.WhereContext;
@@ -17,10 +18,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -96,9 +94,16 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
      * */
     @Override
     public <T> T updateByFieldContext(FieldContext fieldContext) {
-        T entity =(T)entityManager.find(clazz,fieldContext.get(ID));
-        entity = CopyFieldUtil.copyPropertis(entity,fieldContext,entityManager,getFieldMap());
-        return entityManager.merge(entity);
+        String idName = (String)fieldContext.get(ID);
+        Object object = fieldContext.get(idName);
+        fieldContext.remove(ID);
+        fieldContext.remove(idName);
+        CriteriaUpdate criteriaUpdate =this.builder.createCriteriaUpdate(clazz);
+        criteriaUpdate.from(clazz);
+        CopyFieldUtil.setFiled(fieldContext,criteriaUpdate,entityManager);
+        criteriaUpdate.where(builder.equal(root.get(idName),object));
+        entityManager.createQuery(criteriaUpdate).executeUpdate();
+        return (T)entityManager.find(clazz,object);
     }
 
     /**
@@ -108,9 +113,7 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     public <T> int updateByFieldContexts(FieldContext[] fieldContexts, int flushSize) {
         Map<String, Field> map =getFieldMap();
         for (int i = 0; i < fieldContexts.length; i++) {
-            T entity =(T)  entityManager.find(clazz,fieldContexts[i].get(ID));
-            entity = CopyFieldUtil.copyPropertis(entity,fieldContexts[i],entityManager,map);
-            entityManager.merge(entity);
+            updateByFieldContext(fieldContexts[i]);
             if (i%flushSize==0){
                 entityManager.flush();
                 entityManager.clear();
@@ -123,19 +126,13 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
      * */
     @Override
     public <T> int updateByFieldContextAndWhereContext (WhereContext whereContext, int flushSize) {
-        Map<String, Field> map =getFieldMap();
         FieldContext fieldContext =whereContext.getFieldContext();
-        List<T> list =findByWhereContext(whereContext);
-        for (int i = 0; i < list.size(); i++) {
-            T entity = list.get(i);
-            entity = CopyFieldUtil.copyPropertis(entity,fieldContext,entityManager,map);
-            entityManager.merge(entity);
-            if (i%flushSize==0){
-                entityManager.flush();
-                entityManager.clear();
-            }
-        }
-        return list.size();
+        CriteriaUpdate<T> criteriaUpdate =this.builder.createCriteriaUpdate(clazz);
+        criteriaUpdate.from(clazz);
+        CopyFieldUtil.setFiled(fieldContext,criteriaUpdate,entityManager);
+        Predicate predicate =   PresentWhereContextUtil.expressionToPredicate(builder,root,new Expression[whereContext.getExpressions().size()]);
+        criteriaUpdate.where(predicate);
+        return  entityManager.createQuery(criteriaUpdate).executeUpdate();
     }
 
     @Override
@@ -219,7 +216,6 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
         }
         return this.fieldMap;
     }
-
     public CriteriaBuilder getBuilder(){
         return this.builder;
     }

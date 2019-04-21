@@ -18,6 +18,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @Configuration
@@ -90,5 +93,11 @@ public class JpaConfigration {
     public ObjectMapper objectMapper() {
         return new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
+
+    @Bean("filedMap")
+    public LinkedHashMap<Class,Map<String,Field>> classField() {
+        return new LinkedHashMap<>();
+    }
+
 
 }

@@ -13,6 +13,8 @@ import com.yhl.oauthServer.entity.ResourceServer;
 import com.yhl.oauthServer.service.OAthGrantedAuthorityMapService;
 import com.yhl.oauthServer.service.OAuthAccessTokenService;
 import com.yhl.oauthServer.service.ResourceServerService;
+import com.yhl.orm.componet.util.PredicateBuilder;
+import com.yhl.orm.componet.util.WhereBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,17 +47,21 @@ public class TokenGetEndPoint {
 
     @PostMapping("token")
     public String getAccessToken(@RequestBody Map<String,String> map) throws HttpRequestMethodNotSupportedException {
-       TypedQuery typedQuery = resourceServerService.getWhereBuildUtil().beginAnSeclect().beginAnWhere()
-                                                    .addEq(ID,map.get(RESOURCEID))
-                                                    .and()
-                                                    .addEq(SECRET,map.get(RESOURCESECRET))
-                                                    .and()
-                                                    .end().buildTypedQuery();
+        WhereBuilder whereBuilder =resourceServerService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder.where(
+                             predicateBuilder.addEq(ID,map.get(RESOURCEID)) .and().addEq(SECRET,map.get(RESOURCESECRET)).end()
+                            ).buildTypeQuery();
         List<ResourceServer> resourceServer =(List<ResourceServer>)resourceServerService.findbyTypeQuery(typedQuery).getData();
        if (resourceServer.isEmpty()){
             throw new HttpRequestMethodNotSupportedException("资源服务器不存在");
         }
-        TypedQuery typedQuery1 = oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnWhere().addEq(TOKENID,map.get(TOKENID)).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder1 =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder1 =whereBuilder1.getPredicateBuilder();
+
+        TypedQuery typedQuery1 =whereBuilder1.where(
+                 predicateBuilder1.addEq(TOKENID,map.get(TOKENID)).end()
+                                    ).buildTypeQuery();
         List<OAuthAccessToken> list =(List<OAuthAccessToken> ) oAuthAccessTokenService.findbyTypeQuery(typedQuery1).getData();
         if (list.isEmpty()){
             throw new HttpRequestMethodNotSupportedException("token不存在");
@@ -65,17 +71,27 @@ public class TokenGetEndPoint {
 
     @PostMapping("getCanVisit")
     public String getCanVisit(@RequestBody Map<String,String> map) throws HttpRequestMethodNotSupportedException {
-        TypedQuery typedQuery1 = oAuthAccessTokenService.getWhereBuildUtil().beginAnSeclect().beginAnWhere().addEq(TOKENID,map.get(TOKENID)).and().end().buildTypedQuery();
+        WhereBuilder whereBuilder =oAuthAccessTokenService.getWhereBuilder();
+        PredicateBuilder predicateBuilder =whereBuilder.getPredicateBuilder();
+
+        TypedQuery typedQuery1 = whereBuilder.where(
+                predicateBuilder.addEq(TOKENID,map.get(TOKENID)).end()
+                             ).buildTypeQuery();
         List<OAuthAccessToken> list =(List<OAuthAccessToken> ) oAuthAccessTokenService.findbyTypeQuery(typedQuery1).getData();
         if (list.isEmpty()){
             throw new HttpRequestMethodNotSupportedException("token不存在");
         }
         OAuthAccessToken oAuthAccessToken =list.get(0);
-        TypedQuery typedQuery =  oAthGrantedAuthorityMapService.getWhereBuildUtil().beginAnSeclect().beginAnWhere()
-                                            .addEq(CLIENTID,oAuthAccessToken.getClientId())
-                                            .and()
-                                            .addEq(ROLEINFO,oAuthAccessToken.getRoleInfo().getId())
-                                            .and().end().buildTypedQuery();
+
+        WhereBuilder whereBuilder1 =oAthGrantedAuthorityMapService.getWhereBuilder();
+        PredicateBuilder predicateBuilder1 =whereBuilder1.getPredicateBuilder();
+        TypedQuery typedQuery = whereBuilder1.where(
+                                predicateBuilder1.addEq(CLIENTID,oAuthAccessToken.getClientId())
+                                                 .and()
+                                                 .addEq(ROLEINFO,oAuthAccessToken.getRoleInfo().getId())
+                                                 .end()
+
+                            ).buildTypeQuery();
         List<OAthGrantedAuthorityMap> list1 =  (List<OAthGrantedAuthorityMap>) oAthGrantedAuthorityMapService.findbyTypeQuery(typedQuery).getData();
         JSONArray jsonArray  =new  JSONArray();
         list1.forEach(ele ->{

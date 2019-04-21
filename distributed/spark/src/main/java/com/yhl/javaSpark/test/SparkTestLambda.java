@@ -24,6 +24,7 @@ public class SparkTestLambda {
         JavaPairRDD<Integer,String> sorted =  swap.sortByKey(false);
         JavaPairRDD<String,Integer> result =  sorted.mapToPair(tp -> tp.swap());
         result.saveAsTextFile(args[1]);
+
         context.close();
     }
 }
