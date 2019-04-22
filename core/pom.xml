@@ -19,6 +19,7 @@
     <modules>
         <module>orm</module>
         <module>base</module>
+        <module>creatFile</module>
     </modules>
 
 
