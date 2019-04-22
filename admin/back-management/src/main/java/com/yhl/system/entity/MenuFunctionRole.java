@@ -11,9 +11,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "menu_function_role",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"client_id", "role_info", "api_uri"})},
-        indexes = {@Index(columnList = "client_id")
-                , @Index(columnList = "role_info")})
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"menu_function_id", "role_id", "company_id"})})
 public class MenuFunctionRole extends BaseEntity {
 
     private static final long serialVersionUID = 757205122408504955L;
