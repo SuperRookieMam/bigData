@@ -18,6 +18,7 @@
         <module>spark</module>
         <module>elasticSerch</module>
         <module>hive</module>
+        <module>hbase</module>
     </modules>
     <packaging>pom</packaging>
 

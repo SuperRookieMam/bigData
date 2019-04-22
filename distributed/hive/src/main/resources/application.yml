@@ -1,0 +1,6 @@
+hive:
+   type: com.alibaba.druid.pool.DruidDataSource
+   url: jdbc:hive2://192.168.2.56/yu
+   driverClassName: org.apache.hive.jdbc.HiveDriver
+   usr: root
+   password: 123456
