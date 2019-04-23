@@ -4,6 +4,7 @@ import com.yhl.base.entity.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 
@@ -14,7 +15,7 @@ import javax.persistence.*;
         uniqueConstraints = {@UniqueConstraint(columnNames = {"client_id", "role_info", "api_uri"})},
         indexes = {@Index(columnList = "client_id")
                 , @Index(columnList = "role_info")})
-public class OAthGrantedAuthority extends BaseEntity {
+public class OAthGrantedAuthority extends BaseEntity  implements GrantedAuthority {
     private static final long serialVersionUID = 4062924753193768577L;
 
     @Id
@@ -52,7 +53,7 @@ public class OAthGrantedAuthority extends BaseEntity {
     @Column(name = "macther_type")
     private String mactherType;
 
-
+    @Override
     public String getAuthority() {
         String jsonStr="{";
                jsonStr+="\"companyId\":\""+roleInfo.getCompanyId()+"\",";

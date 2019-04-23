@@ -3,8 +3,12 @@ package com.yhl.system.entity;
 import com.yhl.base.entity.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +18,7 @@ import java.util.List;
 @Table(name = "oath_user_detailes",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"user_name"})},
         indexes = {@Index(columnList = "user_name")})
-public class OAthUserDetailes extends BaseEntity {
+public class OAthUserDetailes extends BaseEntity implements UserDetails {
 
     private static final long serialVersionUID = 9056596580975978130L;
     @Id
@@ -47,4 +51,38 @@ public class OAthUserDetailes extends BaseEntity {
     @Column(name = "is_enabled")
     private boolean isEnabled;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return passWord;
+    }
+
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return !isExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !isLock;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return !StringUtils.isEmpty(credentials);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
 }
