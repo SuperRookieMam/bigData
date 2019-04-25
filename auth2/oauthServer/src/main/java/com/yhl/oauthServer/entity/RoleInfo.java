@@ -47,8 +47,6 @@ public class RoleInfo extends BaseEntity {
         roleInfoDto.setDepartmentName(roleInfo.getDepartmentName());
         roleInfoDto.setDepartmentId(roleInfo.getDepartmentId());
         roleInfoDto.setId(roleInfo.getId());
-        roleInfoDto.setCreateTime(roleInfo.getCreateTime());
-        roleInfoDto.setModifyTime(roleInfo.getModifyTime());
         roleInfoDto.setCreateTime(roleInfo.getCreateUser());
         return roleInfoDto;
     }
@@ -59,10 +57,7 @@ public class RoleInfo extends BaseEntity {
         roleInfo.setCompanyId(roleInfoDto.getCompanyId());
         roleInfo.setDepartmentName(roleInfoDto.getDepartmentName());
         roleInfo.setDepartmentId(roleInfoDto.getDepartmentId());
-        roleInfo.setId(roleInfoDto.getId());
-        roleInfo.setCreateTime(roleInfoDto.getCreateTime());
-        roleInfo.setModifyTime(roleInfoDto.getModifyTime());
-        roleInfo.setCreateTime(roleInfoDto.getCreateUser());
+        roleInfo.setId(roleInfoDto.getId()); ;
         return roleInfo;
     }
 }

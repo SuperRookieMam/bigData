@@ -1,7 +1,6 @@
 package com.yhl.orm.dao;
 
 
-import com.alibaba.fastjson.JSONArray;
 import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.PageInfo;
 import com.yhl.orm.componet.constant.WhereContext;
@@ -13,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -57,7 +55,7 @@ import java.util.Map;
 
     EntityManager getEntityManager();
 
-     Class getEntityClass();
+    <T> Class<T> getEntityClass();
 
      Map<String,Field> getFieldMap();
 

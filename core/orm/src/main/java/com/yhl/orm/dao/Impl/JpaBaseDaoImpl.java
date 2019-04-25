@@ -29,7 +29,7 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
 
     private final EntityManager entityManager;
 
-    private Class clazz;
+    private Class<T> clazz;
 
     private CriteriaBuilder builder ;
 
@@ -127,8 +127,8 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     @Override
     public <T> int updateByFieldContextAndWhereContext (WhereContext whereContext, int flushSize) {
         FieldContext fieldContext =whereContext.getFieldContext();
-        CriteriaUpdate<T> criteriaUpdate =this.builder.createCriteriaUpdate(clazz);
-        criteriaUpdate.from(clazz);
+        CriteriaUpdate<T> criteriaUpdate = (CriteriaUpdate<T>) this.builder.createCriteriaUpdate(clazz);
+        criteriaUpdate.from((Class<T>) clazz);
         CopyFieldUtil.setFiled(fieldContext,criteriaUpdate,entityManager);
         Predicate predicate =   PresentWhereContextUtil.expressionToPredicate(builder,root,new Expression[whereContext.getExpressions().size()]);
         criteriaUpdate.where(predicate);
@@ -140,7 +140,7 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
        if (whereContext==null){
             return (List<T>)super.findAll();
         }
-        List<T> list = PresentWhereContextUtil.getTypedQuery(clazz,entityManager,whereContext).getResultList();
+        List<T> list = (List<T>) PresentWhereContextUtil.getTypedQuery(clazz,entityManager,whereContext).getResultList();
         return list;
     }
 
@@ -206,8 +206,8 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
         return  this.entityManager;
     }
 
-    public Class getEntityClass(){
-        return  this.clazz;
+    public<T> Class<T> getEntityClass(){
+        return (Class<T>) this.clazz;
     }
 
     public Map<String,Field> getFieldMap(){

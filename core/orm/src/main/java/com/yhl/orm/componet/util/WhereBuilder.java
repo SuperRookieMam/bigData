@@ -18,7 +18,7 @@ public class WhereBuilder<T,ID extends Serializable> {
 
     private Class<T> clazz;
 
-    private PredicateBuilder predicateBuilder;
+    private PredicateBuilder<T,ID> predicateBuilder;
 
     private CriteriaBuilder builder ;
 
@@ -54,7 +54,7 @@ public class WhereBuilder<T,ID extends Serializable> {
         return predicate;
     }
 
-    public PredicateBuilder getPredicateBuilder(){
+    public PredicateBuilder<T,ID> getPredicateBuilder(){
         if (ObjectUtils.isEmpty(predicateBuilder)){
             predicateBuilder =new PredicateBuilder(builder,root);
         }

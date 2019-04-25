@@ -21,7 +21,7 @@ public class MenuFunction extends BaseEntity {
 
     @Column(name = "cname_")
     private String cname;
-
+    //属于那个组
     @Column(name = "ename_")
     private String ename;
 
