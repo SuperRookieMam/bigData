@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @EnableWebSecurity
@@ -18,7 +20,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     OAthUserDetailesService oAthUserDetailesService;
+    @Autowired
+    private AuthenticationSuccessHandler loginSuccessHandler;
 
+    @Autowired
+    private AuthenticationFailureHandler loginFailureHandler;
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
@@ -26,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
              .antMatchers("/login/**","/logout/**").permitAll()
              .anyRequest().authenticated()
              .and()
-             .formLogin().permitAll(); //新增login form支持用户登录及授权;
+             .formLogin().successHandler(loginSuccessHandler).failureHandler(loginFailureHandler).permitAll(); //新增login form支持用户登录及授权;
         http.userDetailsService(oAthUserDetailesService);
 //        检测倒用没有登陆跳转登陆页面重新拦截修改401错误
        http.exceptionHandling()

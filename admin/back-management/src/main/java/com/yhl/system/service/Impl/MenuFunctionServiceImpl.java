@@ -73,9 +73,10 @@ public class MenuFunctionServiceImpl extends BaseServiceImpl<MenuFunction, Long>
                  Map<String,Object> map =new HashMap<>();
                  map.put("cname",ele.getCname());
                  map.put("url",ele.getUrl());
+                 map.put("id",ele.getId());
                  map.put("isMenu",ele.getIsMenu());
                  iterator.remove();
-                 map.put(" ",combinationMemu(list,ele.getFunctionNumber()));
+                 map.put("submenus",combinationMemu(list,ele.getFunctionNumber()));
                  list1.add(map);
              }
          }
