@@ -76,14 +76,22 @@ public class PresentWhereContextUtil {
     /**
      * 获取构建好wherecondition条件的TypedQuery
      * */
-    public static<T>  CriteriaQuery<Long> getContQueryByPredicate(Class<T> tClass, EntityManager entityManager, Predicate predicate){
+    public static<T>  CriteriaQuery<Long> getContQueryByPredicate(Class<T> tClass, EntityManager entityManager, Predicate predicate,boolean distinct){
         CriteriaBuilder  builder=entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
-        query.from(tClass);
+        Root root =query.from(tClass);
         if (!ObjectUtils.isEmpty(predicate))
             query.where(predicate);
         else
             query.where();
+        if (distinct){
+            query.distinct(distinct);
+        }
+        if (query.isDistinct()) {
+            query.select(builder.countDistinct(root));
+        } else {
+            query.select(builder.count(root));
+        }
         return  query;
     }
     public static<T> Predicate expressionToPredicate(CriteriaBuilder  builder,Root<T> root,Expression[] expressions){
@@ -258,7 +266,7 @@ public class PresentWhereContextUtil {
         Predicate predicate = PresentWhereContextUtil.expressionToPredicate(builder,root,expressions);
 
         CriteriaQuery<T> criteriaQuery = PresentWhereContextUtil.getCriteriaQueryByPredicate(clazz,entityManager,predicate);
-        CriteriaQuery<Long> countQuery =PresentWhereContextUtil.getContQueryByPredicate(clazz,entityManager,predicate);
+        CriteriaQuery<Long> countQuery =PresentWhereContextUtil.getContQueryByPredicate(clazz,entityManager,predicate,false);
 
         if (!ObjectUtils.isEmpty(whereContext.getGroupby())) {
             String[] group = whereContext.getGroupby().toArray(new String[whereContext.getGroupby().size()]);
@@ -269,13 +277,6 @@ public class PresentWhereContextUtil {
         if (!ObjectUtils.isEmpty(sort)){
             criteriaQuery.orderBy(QueryUtils.toOrders(sort, root, builder));
         }
-
-        if (countQuery.isDistinct()) {
-            countQuery.select(builder.countDistinct(root));
-        } else {
-            countQuery.select(builder.count(root));
-        }
-
         TypedQuery<T> typedQuery =entityManager.createQuery(criteriaQuery);
         TypedQuery<Long> typedCountQuery =entityManager.createQuery(countQuery);
 

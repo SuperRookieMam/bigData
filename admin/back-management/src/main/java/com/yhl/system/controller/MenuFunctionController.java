@@ -4,6 +4,7 @@ import com.yhl.base.componet.dto.ResultDto;
 import com.yhl.base.controller.BaseController;
 import com.yhl.system.componet.annotation.CurrentUser;
 import com.yhl.system.entity.Company;
+import com.yhl.system.entity.MenuFunction;
 import com.yhl.system.entity.OAthUserDetailes;
 import com.yhl.system.service.MenuFunctionService;
 import io.swagger.annotations.ApiOperation;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("menuFunction")
-public class MenuFunctionController extends BaseController<Company,Long> {
+public class MenuFunctionController extends BaseController<MenuFunction,Long> {
 
     @Autowired
     private MenuFunctionService menuFunctionService;
