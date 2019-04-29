@@ -39,14 +39,16 @@ public class PresentWhereContextUtil {
         CriteriaQuery<T> query = builder.createQuery(tClass);
         //获取查询条件
         Expression[] expressions = whereContext.getExpressions().toArray(new Expression[whereContext.getExpressions().size()]);
-        //查询条件为空
-        if (expressions.length==0){
-            return  entityManager.createQuery(query);
-        }
+
         Root<T> root =query.from(tClass);
         //构建查询条件
-        query.where(expressionToPredicate( builder,root,expressions));
 
+        //查询条件为空
+        if (expressions.length>0){
+            query.where(expressionToPredicate( builder,root,expressions));
+        }else {
+            query.where();
+        }
         // 构建分组
         if (!ObjectUtils.isEmpty(whereContext.getGroupby())){
             groupBy(query,root,whereContext.getGroupby().toArray(new String[whereContext.getGroupby().size()]));
@@ -64,16 +66,37 @@ public class PresentWhereContextUtil {
     public static <T> CriteriaQuery<T> getCriteriaQueryByPredicate(Class<T> tClass, EntityManager entityManager, Predicate predicate){
         CriteriaBuilder  builder=entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(tClass);
-        query.where(predicate);
+                query.from(tClass);
+        if (!ObjectUtils.isEmpty(predicate))
+                    query.where(predicate);
+        else
+            query.where();
         return  query;
     }
-
+    /**
+     * 获取构建好wherecondition条件的TypedQuery
+     * */
+    public static<T>  CriteriaQuery<Long> getContQueryByPredicate(Class<T> tClass, EntityManager entityManager, Predicate predicate){
+        CriteriaBuilder  builder=entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        query.from(tClass);
+        if (!ObjectUtils.isEmpty(predicate))
+            query.where(predicate);
+        else
+            query.where();
+        return  query;
+    }
     public static<T> Predicate expressionToPredicate(CriteriaBuilder  builder,Root<T> root,Expression[] expressions){
-        List<Predicate> predicateList =new ArrayList<>();
-        for (Expression expression : expressions) {
-            predicateList.add(presentExPression(builder,root,expression));
+        Predicate predicate =null;
+        if (!ObjectUtils.isEmpty(expressions)) {
+            List<Predicate> predicateList = new ArrayList<>();
+            for (Expression expression : expressions) {
+                predicateList.add(presentExPression(builder, root, expression));
+            }
+            if (!predicateList.isEmpty())
+                predicate = builder.and(predicateList.toArray(new Predicate[predicateList.size()]));
         }
-        return builder.and(predicateList.toArray(new Predicate[predicateList.size()]));
+        return predicate;
     }
 
     public static<T> Predicate presentExPression(CriteriaBuilder  builder, Root<T> root, Expression expression){
@@ -228,17 +251,20 @@ public class PresentWhereContextUtil {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(clazz);
         Root<T> root = query.from(clazz);
-
-        Expression[] expressions = whereContext.getExpressions().toArray(new Expression[whereContext.getExpressions().size()]);
+        Expression[] expressions = null;
+        if (!ObjectUtils.isEmpty(whereContext.getExpressions())){
+            expressions = whereContext.getExpressions().toArray(new Expression[whereContext.getExpressions().size()]);
+        }
         Predicate predicate = PresentWhereContextUtil.expressionToPredicate(builder,root,expressions);
 
         CriteriaQuery<T> criteriaQuery = PresentWhereContextUtil.getCriteriaQueryByPredicate(clazz,entityManager,predicate);
-        CriteriaQuery<Long> countQuery =PresentWhereContextUtil.getCriteriaQueryByPredicate(Long.class,entityManager,predicate);
+        CriteriaQuery<Long> countQuery =PresentWhereContextUtil.getContQueryByPredicate(clazz,entityManager,predicate);
 
-        String[] group =whereContext.getGroupby().toArray(new String[whereContext.getGroupby().size()]);
-        PresentWhereContextUtil.groupBy(criteriaQuery,root,group);
-        PresentWhereContextUtil.groupBy(countQuery,root,group);
-
+        if (!ObjectUtils.isEmpty(whereContext.getGroupby())) {
+            String[] group = whereContext.getGroupby().toArray(new String[whereContext.getGroupby().size()]);
+            PresentWhereContextUtil.groupBy(criteriaQuery, root, group);
+            PresentWhereContextUtil.groupBy(countQuery, root, group);
+        }
         Sort sort = PresentWhereContextUtil.getToSort(whereContext.getSort());
         if (!ObjectUtils.isEmpty(sort)){
             criteriaQuery.orderBy(QueryUtils.toOrders(sort, root, builder));
