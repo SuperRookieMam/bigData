@@ -8,10 +8,12 @@ import java.lang.annotation.*;
 public @interface Description {
 
     //列表头名字
-    String headerName() default "";
+    String label() default "";
 
     //update跟新的时列对应的类型. select checkbox  time input
-    String eleType() default "";
+    String prop() default "";
+    // 是否参与表头搜素
+    boolean search() default  false;
 
-    boolean changeToBoolen() default false;
+
 }

@@ -1,0 +1,7 @@
+package ~[service];
+
+import ~[baseservice];
+import ~[entityname];
+
+public interface ~[entitySimpleName]Service extends BaseService<~[entitySimpleName], ~[idtype]> {
+}

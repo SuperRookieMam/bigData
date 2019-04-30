@@ -1,0 +1,10 @@
+package ~[serviceImpl];
+
+import ~[baseserviceImpl];
+import ~[entityname];
+import ~[parantService];
+import org.springframework.stereotype.Service;
+
+@Service
+public class ~[entitySimpleName]ServiceImpl extends BaseServiceImpl<~[entitySimpleName], ~[idtype]> implements ~[entitySimpleName]Service {
+}
