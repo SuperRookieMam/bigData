@@ -1,6 +1,6 @@
 package ~[serviceImpl];
 
-import ~[baseserviceImpl];
+import com.yhl.base.service.impl.BaseServiceImpl;
 import ~[entityname];
 import ~[parantService];
 import org.springframework.stereotype.Service;

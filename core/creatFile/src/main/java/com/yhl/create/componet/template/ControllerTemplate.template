@@ -1,0 +1,12 @@
+package ~[controller];
+
+import com.yhl.base.controller.BaseController;
+import ~[entityname];
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("~[entitySimpleNameFirstLower]")
+public class ~[entitySimpleName]Controller extends BaseController<~[entitySimpleName],~[idtype]> {
+
+}

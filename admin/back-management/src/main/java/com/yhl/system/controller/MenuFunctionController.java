@@ -3,13 +3,15 @@ package com.yhl.system.controller;
 import com.yhl.base.componet.dto.ResultDto;
 import com.yhl.base.controller.BaseController;
 import com.yhl.system.componet.annotation.CurrentUser;
-import com.yhl.system.entity.Company;
 import com.yhl.system.entity.MenuFunction;
 import com.yhl.system.entity.OAthUserDetailes;
 import com.yhl.system.service.MenuFunctionService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("menuFunction")

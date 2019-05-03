@@ -1,6 +1,6 @@
 package ~[service];
 
-import ~[baseservice];
+import com.yhl.base.service.BaseService;
 import ~[entityname];
 
 public interface ~[entitySimpleName]Service extends BaseService<~[entitySimpleName], ~[idtype]> {

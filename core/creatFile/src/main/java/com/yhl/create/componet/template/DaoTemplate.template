@@ -1,6 +1,6 @@
 package ~[dao];
 
-import ~[basedao];
+import com.yhl.base.dao.BaseDao;
 import ~[entityname];
 import org.springframework.stereotype.Repository;
 
