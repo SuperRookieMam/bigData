@@ -15,5 +15,6 @@ public @interface Description {
     // 是否参与表头搜素
     boolean search() default  false;
 
-
+    boolean isColumn() default  false;
+    String searchType() default  "";
 }

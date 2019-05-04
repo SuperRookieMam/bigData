@@ -1,6 +1,9 @@
 package com.yhl.create.util;
 
 
+import com.yhl.create.componet.annotation.Description;
+import org.springframework.util.ObjectUtils;
+
 import javax.persistence.Id;
 import java.io.*;
 import java.lang.reflect.Field;
@@ -193,8 +196,32 @@ public abstract class CreateUtils {
 
 	}
 
+	//跟库class分析这个实体需要生成查询条件和table要先显示的列
+	public static void getTableMsgByListFields(List<Field> list){
+		List<Map<String,Object>> seachList = new ArrayList<>();
+		List<Map<String,Object>> columnList = new ArrayList<>();
+		list.forEach(ele ->{
+			Description description = ele.getAnnotation(Description.class);
+			if (!ObjectUtils.isEmpty(description)&&description.search()){
+				Map<String,Object> searchmap = new HashMap<String,Object>();
+				searchmap.put("prop",ele.getName());
+				searchmap.put("label",description.label());
+				searchmap.put("searchType",description.searchType());
+				seachList.add(searchmap);
+			}
+			if (!ObjectUtils.isEmpty(description)&&description.isColumn()){
+				Map<String,Object> columnmap = new HashMap<String,Object>();
+				columnmap.put("prop",ele.getName());
+				columnmap.put("label",description.label());
+				columnList.add(columnmap);
+			}
+		});
 
 
+	}
+	public  static  void  createTableByListMsg(List<Map<String,Object>> searchList,List<Map<String,Object>> columnList){
+
+	}
 
 
 	public static void main(String[] args) throws ClassNotFoundException, FileNotFoundException {
@@ -204,6 +231,6 @@ public abstract class CreateUtils {
 		  //根据包名加载Class
 		  Map<String,Object> objectMap =getClassByFile(new File(classpath+packgePath));
 		  String templatePath="D:\\code\\source\\ideaSource\\bigdata\\bigData\\core\\creatFile\\src\\main\\java\\com\\yhl\\create\\componet\\template";
-		createFileByMap(objectMap,"D:\\JavaFile1",templatePath);
+		  createFileByMap(objectMap,"D:\\JavaFile1",templatePath);
 	}
 }
