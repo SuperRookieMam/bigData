@@ -16,5 +16,6 @@ public @interface Description {
     boolean search() default  false;
 
     boolean isColumn() default  false;
+    // 规定搜索的类型,下啦列表select,时间组件time,文本text
     String searchType() default  "";
 }

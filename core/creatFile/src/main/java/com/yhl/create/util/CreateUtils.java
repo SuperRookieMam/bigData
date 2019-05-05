@@ -219,8 +219,122 @@ public abstract class CreateUtils {
 
 
 	}
-	public  static  void  createTableByListMsg(List<Map<String,Object>> searchList,List<Map<String,Object>> columnList){
+	public  static  void  createTableByListMsg(List<Map<String,Object>> searchList,List<Map<String,Object>> columnList,Class<?> clazz){
+			StringBuffer stringBuffer =new StringBuffer();
+			stringBuffer.append("<template>\n");
+		    stringBuffer.append("   <div>\n");
+		    if (!searchList.isEmpty()){
+		     	stringBuffer.append("     <el-form ref=\"serchObj\"\n" +
+						"              class=\"demo-form-inline\"\n" +
+						"              size=\"mini\"\n" +
+						"              label-width=\"80px\">\n");
+				int m=0;
+				int n=0;
+				for (int j = 0; j <searchList.size() ; j++) {
+					if ((j+1)%6==0&&(j+1)!=searchList.size()) {
+						stringBuffer.append("         <el-row>\n");
+						m+=1;
+					}
+					Map<String,Object> ele =searchList.get(j);
+					if ("text".equalsIgnoreCase(ele.get("searchType").toString())){
+						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("                <el-form-item label=\""+ele.get("label")+"\">\n" +
+											"                   <el-input v-model=\"serchObj['"+ele.get("prop")+"']\"/>\n" +
+											"               </el-form-item>\n");
+						stringBuffer.append("            </el-col>\n");
+					} else if ("time".equalsIgnoreCase(ele.get("searchType").toString())){
+						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("              <el-form-item label=\""+ele.get("label")+"\">\n" +
+											"                 <el-date-picker v-model=\"serchObj['"+ele.get("prop")+"']\"\n" +
+											"                                 type=\"datetime\"\n" +
+											"                                 placeholder=\"选择日期时间\">\n" +
+											"                 </el-date-picker>\n" +
+											"              </el-form-item>\n");
+						stringBuffer.append("            </el-col>\n");
+					}else if ("select".equalsIgnoreCase(ele.get("searchType").toString())){
+						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("                    <el-select v-model=\"serchObj['"+ele.get("prop")+"']\" placeholder=\""+ele.get("label")+"\">\n" +
+											"                      <el-option v-for=\"(item,index) in selectData\"\n" +
+											"                                               :key=\"index\"\n" +
+											"                                               :label=\"item.lable\"\n" +
+											"                                               :value=\"item.value\"/>\n" +
+											"                    </el-select>\n" +
+											"               </el-form-item>\n");
+						stringBuffer.append("            </el-col>\n");
+					}else if ("select".equalsIgnoreCase(ele.get("searchType").toString())){
+						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("                    <el-select v-model=\"serchObj['"+ele.get("prop")+"']\" placeholder=\""+ele.get("label")+"\">\n" +
+											"                      <el-option v-for=\"(item,index) in selectData\"\n" +
+											"                                               :key=\"index\"\n" +
+											"                                               :label=\"item.lable\"\n" +
+											"                                               :value=\"item.value\"/>\n" +
+											"                    </el-select>\n" +
+											"               </el-form-item>\n");
+						stringBuffer.append("            </el-col>\n");
+					}
+					stringBuffer.append("            <el-col :span=\"4\">");
+					stringBuffer.append("              <el-button type=\"primary\"\n" +
+										"                         size=\"mini\"\n" +
+										"                         @click=\"search()\">\n" +
+										"                            筛选\n" +
+										"                          </el-button>\n" +
+										"              <el-button type=\"primary\"\n" +
+										"                         size=\"mini\"\n" +
+										"                         @click=\"add()\">\n" +
+										"                            新增\n" +
+										"                          </el-button>\n");
+					stringBuffer.append("            </el-col>\n");
+					if (((j+1)%6==0&& m==n+1)||(j+1)!=searchList.size()) {
+						stringBuffer.append("         </el-row>\n");
+						n+=1;
+					}
+				}
+				stringBuffer.append("      </el-form>\n");
+			}
 
+			if (!columnList.isEmpty()){
+				stringBuffer.append("      <el-table :data=\"tableData\"\n"
+								   +"                style=\"width: 100%\">\n");
+				columnList.forEach(ele -> {
+					stringBuffer.append("         <el-table-column\n" +
+										"                 label=\""+ele.get("label")+"\"\n" +
+										"                 prop=\""+ele.get("prop")+"\"/>\n");
+				});
+				stringBuffer.append("         <el-table-column label=\"操作\" :min-width=\"60\">\n" +
+									"                 <template slot-scope=\"scope\">\n" +
+									"                   <el-button type=\"text\" size=\"mini\" @click=\"edit(scope.row)\">编辑</el-button>\n" +
+									"                   <el-button type=\"text\" size=\"mini\" @click=\"delete(scope.row)\">删除</el-button>\n" +
+									"                 </template>\n" +
+									"         </el-table-column>\n");
+				stringBuffer.append("         <el-pagination\n" +
+									"               @size-change=\"handleSizeChange\"\n" +
+									"               @current-change=\"handleCurrentChange\"\n" +
+									"               :current-page=\"currentPage\"\n" +
+									"               :page-sizes=\"pageSizes\"\n" +
+									"               :page-size=\"currentPageSizes\"\n" +
+									"               layout=\"total, sizes, prev, pager, next, jumper\"\n" +
+									"               :total=\"tableData.length\"/>\n");
+				stringBuffer.append("      </el-table>\n");
+			}
+
+			stringBuffer.append("   </div>\n");
+			stringBuffer.append("</template>\n");
+			stringBuffer.append("<script>\n");
+			stringBuffer.append("  import Vue from 'vue'\n" +
+								"  import { Component } from 'vue-property-decorator'\n"+
+								"  import { namespace } from 'vuex-class'\n"+
+								"  import AnalysParam from '../../../../plugins/ParamUtils'\n");
+		stringBuffer.append("  const Formstate = namespace('"+clazz.getSimpleName()+"')\n");
+		stringBuffer.append("  @Component\n" +
+							"  export default class "+clazz.getSimpleName()+" extends Vue {\n");
+		stringBuffer.append("\n" +
+							"    @Formstate.Action('get')\n" +
+							"    action\n");
+
+
+
+		stringBuffer.append("  }\n");
+			stringBuffer.append("</script>\n");
 	}
 
 
