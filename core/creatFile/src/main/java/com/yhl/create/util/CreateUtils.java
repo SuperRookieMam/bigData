@@ -193,11 +193,44 @@ public abstract class CreateUtils {
 			 bufferedWriter.flush();
 			 bufferedWriter.close();
 		 }
+		createVueFileByClass(clazz,createPath);
+	}
+	//根据模板和类生成文件
+	public static void createVueFileByClass(Class<?> clazz,String createPath) throws IOException {
+		List<Field> list =	MyClassUtil.getAllFields(clazz);
+		List<BufferedWriter> list1 =new ArrayList<>();
+		File  tableFile =new File(createPath+"/web/"+clazz.getSimpleName()+"/"+clazz.getSimpleName()+"s.vue");
+		if (!tableFile.exists()){
+			File file =tableFile.getParentFile().getParentFile();
+			if (!file.exists()){
+				file.mkdir();
+			}
+			file =tableFile.getParentFile();
+			if (!file.exists()){
+				file.mkdir();
+			}
+		}
+		if (tableFile.createNewFile()){
+			FileWriter fileWriter =new FileWriter(tableFile);
+			BufferedWriter bufferedWriter =new BufferedWriter(fileWriter);
+			list1.add(bufferedWriter);
+		}
+		for(BufferedWriter bufferedWriter:list1) {
+			// 生成dao文件
+			InputStream inputStream =new ByteArrayInputStream(getTableMsgByListFields(list,clazz).toString().getBytes());
+			BufferedReader bufferedReader =new BufferedReader(new InputStreamReader(inputStream));
+			String line="";
+			while ((line = bufferedReader.readLine()) != null) {
+				bufferedWriter.write(line+"\n");
+				System.out.println(line);
+			}
+			bufferedWriter.flush();
+			bufferedWriter.close();
+		}
 
 	}
-
 	//跟库class分析这个实体需要生成查询条件和table要先显示的列
-	public static void getTableMsgByListFields(List<Field> list){
+	public static StringBuffer getTableMsgByListFields(List<Field> list,Class<?>clazz){
 		List<Map<String,Object>> seachList = new ArrayList<>();
 		List<Map<String,Object>> columnList = new ArrayList<>();
 		list.forEach(ele ->{
@@ -216,10 +249,10 @@ public abstract class CreateUtils {
 				columnList.add(columnmap);
 			}
 		});
-
+		return createTableByListMsg(seachList,columnList,clazz);
 
 	}
-	public  static  void  createTableByListMsg(List<Map<String,Object>> searchList,List<Map<String,Object>> columnList,Class<?> clazz){
+	public  static  StringBuffer  createTableByListMsg(List<Map<String,Object>> searchList,List<Map<String,Object>> columnList,Class<?> clazz){
 			StringBuffer stringBuffer =new StringBuffer();
 			stringBuffer.append("<template>\n");
 		    stringBuffer.append("   <div>\n");
@@ -237,13 +270,13 @@ public abstract class CreateUtils {
 					}
 					Map<String,Object> ele =searchList.get(j);
 					if ("text".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("            <el-col :span=\"4\">\n");
 						stringBuffer.append("                <el-form-item label=\""+ele.get("label")+"\">\n" +
 											"                   <el-input v-model=\"serchObj['"+ele.get("prop")+"']\"/>\n" +
 											"               </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					} else if ("time".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("            <el-col :span=\"4\">\n");
 						stringBuffer.append("              <el-form-item label=\""+ele.get("label")+"\">\n" +
 											"                 <el-date-picker v-model=\"serchObj['"+ele.get("prop")+"']\"\n" +
 											"                                 type=\"datetime\"\n" +
@@ -252,7 +285,7 @@ public abstract class CreateUtils {
 											"              </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					}else if ("select".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("            <el-col :span=\"4\">\n");
 						stringBuffer.append("                    <el-select v-model=\"serchObj['"+ele.get("prop")+"']\" placeholder=\""+ele.get("label")+"\">\n" +
 											"                      <el-option v-for=\"(item,index) in selectData\"\n" +
 											"                                               :key=\"index\"\n" +
@@ -262,7 +295,7 @@ public abstract class CreateUtils {
 											"               </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					}else if ("select".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">");
+						stringBuffer.append("            <el-col :span=\"4\">\n");
 						stringBuffer.append("                    <el-select v-model=\"serchObj['"+ele.get("prop")+"']\" placeholder=\""+ele.get("label")+"\">\n" +
 											"                      <el-option v-for=\"(item,index) in selectData\"\n" +
 											"                                               :key=\"index\"\n" +
@@ -272,7 +305,7 @@ public abstract class CreateUtils {
 											"               </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					}
-					stringBuffer.append("            <el-col :span=\"4\">");
+					stringBuffer.append("            <el-col :span=\"4\">\n");
 					stringBuffer.append("              <el-button type=\"primary\"\n" +
 										"                         size=\"mini\"\n" +
 										"                         @click=\"filterByserchObj()\">\n" +
@@ -280,7 +313,7 @@ public abstract class CreateUtils {
 										"                          </el-button>\n" +
 										"              <el-button type=\"primary\"\n" +
 										"                         size=\"mini\"\n" +
-										"                         @click=\"add()\">\n" +
+										"                         @click=\"add('"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"')\">\n" +
 										"                            新增\n" +
 										"                          </el-button>\n");
 					stringBuffer.append("            </el-col>\n");
@@ -302,7 +335,7 @@ public abstract class CreateUtils {
 				});
 				stringBuffer.append("         <el-table-column label=\"操作\" :min-width=\"60\">\n" +
 									"                 <template slot-scope=\"scope\">\n" +
-									"                   <el-button type=\"text\" size=\"mini\" @click=\"edit(scope.row)\">编辑</el-button>\n" +
+									"                   <el-button type=\"text\" size=\"mini\" @click=\"edit('"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"',scope.row)\">编辑</el-button>\n" +
 									"                   <el-button type=\"text\" size=\"mini\" @click=\"delete(scope.row)\">删除</el-button>\n" +
 									"                 </template>\n" +
 									"         </el-table-column>\n");
@@ -338,17 +371,18 @@ public abstract class CreateUtils {
 							"\n" +
 							"    tableData = []\n" +
 							"\n" +
-							"    controllerMapping = '"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"'");
-		stringBuffer.append("handleSizeChange (val) {\n" +
-							"\t\t\tthis.params.pageSize = val\n" +
-							"\t\t\tthis.filterByserchObj()\n" +
-							"\t\t}\n" +
-							"\t\thandleCurrentChange (val) {\n" +
-							"\t\t\tthis.params.pageNum = val\n" +
-							"\t\t\tthis.filterByserchObj()\n" +
-							"\t\t}\n");
+							"    controllerMapping = '"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"'\n");
+		stringBuffer.append("\n"+
+				            "    handleSizeChange (val) {\n" +
+							"     this.params.pageSize = val\n" +
+							"      this.filterByserchObj()\n" +
+							"    }\n" +
+							"    handleCurrentChange (val) {\n" +
+							"      this.params.pageNum = val\n" +
+							"      this.filterByserchObj()\n" +
+							"    }\n");
 
- 		stringBuffer.append("\n" +
+ 		stringBuffer.append("\n"+
 							"    filterByserchObj () {\n" +
 							"      this.search(this.templateSearch, this.serchObj, this.params, this.controllerMapping)\n" +
 							"          .then(ele => {\n" +
@@ -356,13 +390,103 @@ public abstract class CreateUtils {
 							"      })\n" +
 							"    }\n");
 
-		stringBuffer.append("    created () {\n" +
+		stringBuffer.append("\n"+
+							"    created () {\n" +
+							"      this.filterByserchObj()\n" +
+							"    }\n");
+		stringBuffer.append("  }\n");
+		stringBuffer.append("</script>\n");
+
+		return stringBuffer;
+	}
+
+	//  根据字生成表单信息字段信息
+	public static StringBuffer getFormMsgByListFields(List<Field> list,Class<?>clazz){
+		List<Map<String,Object>> tabsList =new ArrayList<>();
+		list.forEach(ele ->{
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("field",ele);
+			Class fieldType = ele.getType();
+			ClassLoader classLoader = fieldType.getClassLoader();
+			// 如果是空则证明是javajdk或者扩展的类是系统类
+			if (ObjectUtils.isEmpty(classLoader)){
+				if (Collection.class.isAssignableFrom(fieldType)){
+					map.put("fieldType","collection");
+					map.put("tlcass",MyClassUtil.getSuperClassGenricType(fieldType,0));
+				}else if (Map.class.isAssignableFrom(fieldType)){
+					map.put("fieldType","map");
+				}else {
+					map.put("fieldType","base");
+				}
+			}else {
+				map.put("fieldType","self");
+				map.put("tlcass",fieldType);
+			}
+			tabsList.add(map);
+		});
+
+		return null;
+	}
+
+	public  static  StringBuffer  createFormByListMsg(List<Map<String,Object>>  list,Class<?> clazz){
+		StringBuffer stringBuffer =new StringBuffer();
+		stringBuffer.append("<template>\n");
+		stringBuffer.append("   <div>\n");
+		for (int i = 0; i < list.size(); i++) {
+			
+		}
+		stringBuffer.append("   </div>\n");
+		stringBuffer.append("</template>\n");
+
+
+
+		stringBuffer.append("<script>\n");
+		stringBuffer.append("import { Component, Mixins } from 'vue-property-decorator'\n" +
+				"   import TableBase from '../../../plugins/TableBase'\n");
+
+		stringBuffer.append("  @Component\n" +
+				"  export default class "+clazz.getSimpleName()+" Mixins(TableBase) {\n");
+		stringBuffer.append("\n" +
+				"    templateSearch = ' url like t and (url like t or  companyId eq 1)'\n" +
+				"\n" +
+				"    serchObj = {}\n" +
+				"\n" +
+				"    params = {\n" +
+				"        pageSize: 50,\n" +
+				"        pageNum: 1\n" +
+				"    }\n" +
+				"    pageSizes = [50, 100, 200, 400]\n" +
+				"\n" +
+				"    tableData = []\n" +
+				"\n" +
+				"    controllerMapping = '"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"'\n");
+		stringBuffer.append("\n"+
+				"    handleSizeChange (val) {\n" +
+				"     this.params.pageSize = val\n" +
+				"      this.filterByserchObj()\n" +
+				"    }\n" +
+				"    handleCurrentChange (val) {\n" +
+				"      this.params.pageNum = val\n" +
+				"      this.filterByserchObj()\n" +
+				"    }\n");
+
+		stringBuffer.append("\n"+
+				"    filterByserchObj () {\n" +
+				"      this.search(this.templateSearch, this.serchObj, this.params, this.controllerMapping)\n" +
+				"          .then(ele => {\n" +
+				"            this.tableData = ele\n" +
+				"      })\n" +
+				"    }\n");
+
+		stringBuffer.append("\n"+
+				"    created () {\n" +
 				"      this.filterByserchObj()\n" +
 				"    }\n");
 		stringBuffer.append("  }\n");
-			stringBuffer.append("</script>\n");
-	}
+		stringBuffer.append("</script>\n");
 
+		return stringBuffer;
+	}
 
 	public static void main(String[] args) throws ClassNotFoundException, FileNotFoundException {
 		  String classpath = CreateUtils.class.getResource("/").getPath();
