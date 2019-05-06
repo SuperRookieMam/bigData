@@ -1,7 +1,6 @@
 package com.yhl.orm.dao.Impl;
 
 
-import com.alibaba.fastjson.JSONArray;
 import com.yhl.orm.componet.constant.Expression;
 import com.yhl.orm.componet.constant.FieldContext;
 import com.yhl.orm.componet.constant.PageInfo;
@@ -11,8 +10,6 @@ import com.yhl.orm.componet.util.MyClassUtil;
 import com.yhl.orm.componet.util.PresentWhereContextUtil;
 import com.yhl.orm.dao.JpaBaseDao;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.util.ObjectUtils;
 
@@ -182,7 +179,7 @@ public class JpaBaseDaoImpl<T,ID extends Serializable> extends SimpleJpaReposito
     public void deleteById(ID id) {
         T entity =getOne(id);
          if (!ObjectUtils.isEmpty(entity)){
-             entityManager.detach(entity);
+             entityManager.remove(entity);
          }
     }
     @Override

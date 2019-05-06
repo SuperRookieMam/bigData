@@ -275,7 +275,7 @@ public abstract class CreateUtils {
 					stringBuffer.append("            <el-col :span=\"4\">");
 					stringBuffer.append("              <el-button type=\"primary\"\n" +
 										"                         size=\"mini\"\n" +
-										"                         @click=\"search()\">\n" +
+										"                         @click=\"filterByserchObj()\">\n" +
 										"                            筛选\n" +
 										"                          </el-button>\n" +
 										"              <el-button type=\"primary\"\n" +
@@ -313,26 +313,52 @@ public abstract class CreateUtils {
 									"               :page-sizes=\"pageSizes\"\n" +
 									"               :page-size=\"currentPageSizes\"\n" +
 									"               layout=\"total, sizes, prev, pager, next, jumper\"\n" +
-									"               :total=\"tableData.length\"/>\n");
+									"               :total=\"totalPage\"/>\n");
 				stringBuffer.append("      </el-table>\n");
 			}
 
 			stringBuffer.append("   </div>\n");
 			stringBuffer.append("</template>\n");
 			stringBuffer.append("<script>\n");
-			stringBuffer.append("  import Vue from 'vue'\n" +
-								"  import { Component } from 'vue-property-decorator'\n"+
-								"  import { namespace } from 'vuex-class'\n"+
-								"  import AnalysParam from '../../../../plugins/ParamUtils'\n");
-		stringBuffer.append("  const Formstate = namespace('"+clazz.getSimpleName()+"')\n");
+			stringBuffer.append("import { Component, Mixins } from 'vue-property-decorator'\n" +
+								"   import TableBase from '../../../plugins/TableBase'\n");
+
 		stringBuffer.append("  @Component\n" +
-							"  export default class "+clazz.getSimpleName()+" extends Vue {\n");
+							"  export default class "+clazz.getSimpleName()+" Mixins(TableBase) {\n");
 		stringBuffer.append("\n" +
-							"    @Formstate.Action('get')\n" +
-							"    action\n");
+							"    templateSearch = ' url like t and (url like t or  companyId eq 1)'\n" +
+							"\n" +
+							"    serchObj = {}\n" +
+							"\n" +
+							"    params = {\n" +
+							"        pageSize: 50,\n" +
+							"        pageNum: 1\n" +
+							"    }\n" +
+							"    pageSizes = [50, 100, 200, 400]\n" +
+							"\n" +
+							"    tableData = []\n" +
+							"\n" +
+							"    controllerMapping = '"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"'");
+		stringBuffer.append("handleSizeChange (val) {\n" +
+							"\t\t\tthis.params.pageSize = val\n" +
+							"\t\t\tthis.filterByserchObj()\n" +
+							"\t\t}\n" +
+							"\t\thandleCurrentChange (val) {\n" +
+							"\t\t\tthis.params.pageNum = val\n" +
+							"\t\t\tthis.filterByserchObj()\n" +
+							"\t\t}\n");
 
+ 		stringBuffer.append("\n" +
+							"    filterByserchObj () {\n" +
+							"      this.search(this.templateSearch, this.serchObj, this.params, this.controllerMapping)\n" +
+							"          .then(ele => {\n" +
+							"            this.tableData = ele\n" +
+							"      })\n" +
+							"    }\n");
 
-
+		stringBuffer.append("    created () {\n" +
+				"      this.filterByserchObj()\n" +
+				"    }\n");
 		stringBuffer.append("  }\n");
 			stringBuffer.append("</script>\n");
 	}

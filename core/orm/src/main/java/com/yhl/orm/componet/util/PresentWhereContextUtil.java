@@ -38,7 +38,7 @@ public class PresentWhereContextUtil {
         CriteriaBuilder  builder=entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(tClass);
         //获取查询条件
-        Expression[] expressions = whereContext.getExpressions().toArray(new Expression[whereContext.getExpressions().size()]);
+        Expression[] expressions =whereContext.getExpressions()==null?new Expression[0]: whereContext.getExpressions().toArray(new Expression[whereContext.getExpressions().size()]);
 
         Root<T> root =query.from(tClass);
         //构建查询条件
@@ -63,10 +63,7 @@ public class PresentWhereContextUtil {
     /**
      * 获取构建好wherecondition条件的TypedQuery
      * */
-    public static <T> CriteriaQuery<T> getCriteriaQueryByPredicate(Class<T> tClass, EntityManager entityManager, Predicate predicate){
-        CriteriaBuilder  builder=entityManager.getCriteriaBuilder();
-        CriteriaQuery<T> query = builder.createQuery(tClass);
-                query.from(tClass);
+    public static <T> CriteriaQuery<T> getCriteriaQueryByPredicate(Class<T> tClass,CriteriaQuery<T> query , Predicate predicate){
         if (!ObjectUtils.isEmpty(predicate))
                     query.where(predicate);
         else
@@ -265,7 +262,7 @@ public class PresentWhereContextUtil {
         }
         Predicate predicate = PresentWhereContextUtil.expressionToPredicate(builder,root,expressions);
 
-        CriteriaQuery<T> criteriaQuery = PresentWhereContextUtil.getCriteriaQueryByPredicate(clazz,entityManager,predicate);
+        CriteriaQuery<T> criteriaQuery = PresentWhereContextUtil.getCriteriaQueryByPredicate(clazz,query,predicate);
         CriteriaQuery<Long> countQuery =PresentWhereContextUtil.getContQueryByPredicate(clazz,entityManager,predicate,false);
 
         if (!ObjectUtils.isEmpty(whereContext.getGroupby())) {
@@ -282,8 +279,8 @@ public class PresentWhereContextUtil {
 
         Long total = executeCountQuery(typedCountQuery);
         PageRequest pageable =new PageRequest(whereContext.getPageNum() - 1, whereContext.getPageSize(),sort);
-        typedCountQuery.setFirstResult((int) pageable.getOffset());
-        typedCountQuery.setMaxResults(pageable.getPageSize());
+        typedQuery.setFirstResult((int) pageable.getOffset());
+        typedQuery.setMaxResults(pageable.getPageSize());
         return new PageImpl(typedQuery.getResultList(), pageable, total);
     }
 
