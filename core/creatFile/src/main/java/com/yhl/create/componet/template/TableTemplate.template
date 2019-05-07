@@ -69,7 +69,7 @@
    import TableBase from '../../../plugins/TableBase'
 
   @Component
-  export default class TestTalble extends Mixins(TableBase)  {
+  export default class TestTalbles extends Mixins(TableBase)  {
 
     templateSearch = ' url like t and (url like t or  companyId eq 1)'
 

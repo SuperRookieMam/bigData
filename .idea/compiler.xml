@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="back-management" />
+        <module name="base" />
+        <module name="creatFile" />
+        <module name="elasticSerch" />
+        <module name="eurekaServer" />
+        <module name="hbase" />
+        <module name="hdfs" />
+        <module name="hive" />
+        <module name="mappreduce" />
+        <module name="oauthCommon" />
+        <module name="oauthServer" />
+        <module name="orm" />
+        <module name="resourceServer" />
+        <module name="securityCommon" />
+        <module name="spark" />
+        <module name="test" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="back-management (1)" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -23,7 +23,7 @@ import java.util.Map;
  *JpaSpecificationExecutor 的执行器所有方法
  * */
 @NoRepositoryBean
- public interface JpaBaseDao<T,ID extends Serializable>  extends JpaRepository<T,ID>, JpaSpecificationExecutor<T> {
+ public interface JpaBaseDao<T,ID extends Serializable>  extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
 
      <T> T insertByEntity(T entity);
 

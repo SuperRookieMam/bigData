@@ -22,9 +22,9 @@ public class BaseServiceImpl<T extends BaseEntity,ID extends Serializable> imple
     BaseDao<T,ID> baseDao;
 
     @Override
+    @Transactional(value ="jpaTransactionManager")
     public <T> ResultDto insertByEntity(T entity) {
         entity=(T)baseDao.insertByEntity(entity);
-        baseDao.flush();
         return ResultDto.success(entity);
     }
 
@@ -71,7 +71,7 @@ public class BaseServiceImpl<T extends BaseEntity,ID extends Serializable> imple
 
     @Override
     public <T> ResultDto findById(ID id) {
-        T entity= (T) baseDao.findById(id);
+        T entity= (T) baseDao.getOne(id);
         return ResultDto.success(entity);
     }
 

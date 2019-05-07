@@ -200,6 +200,7 @@ public abstract class CreateUtils {
 		List<Field> list =	MyClassUtil.getAllFields(clazz);
 		List<BufferedWriter> list1 =new ArrayList<>();
 		File  tableFile =new File(createPath+"/web/"+clazz.getSimpleName()+"/"+clazz.getSimpleName()+"s.vue");
+		File  formFile =new File(createPath+"/web/"+clazz.getSimpleName()+"/"+clazz.getSimpleName()+".vue");
 		if (!tableFile.exists()){
 			File file =tableFile.getParentFile().getParentFile();
 			if (!file.exists()){
@@ -215,8 +216,23 @@ public abstract class CreateUtils {
 			BufferedWriter bufferedWriter =new BufferedWriter(fileWriter);
 			list1.add(bufferedWriter);
 		}
-		for(BufferedWriter bufferedWriter:list1) {
+		if (!formFile.exists()){
+			File file =formFile.getParentFile().getParentFile();
+			if (!file.exists()){
+				file.mkdir();
+			}
+			file =formFile.getParentFile();
+			if (!file.exists()){
+				file.mkdir();
+			}
+		}
+		if (formFile.createNewFile()){
+			FileWriter fileWriter =new FileWriter(formFile);
+			BufferedWriter bufferedWriter =new BufferedWriter(fileWriter);
+			list1.add(bufferedWriter);
+		}
 			// 生成dao文件
+			BufferedWriter bufferedWriter =list1.get(0);
 			InputStream inputStream =new ByteArrayInputStream(getTableMsgByListFields(list,clazz).toString().getBytes());
 			BufferedReader bufferedReader =new BufferedReader(new InputStreamReader(inputStream));
 			String line="";
@@ -226,8 +242,16 @@ public abstract class CreateUtils {
 			}
 			bufferedWriter.flush();
 			bufferedWriter.close();
-		}
-
+			bufferedWriter =list1.get(1);
+		    inputStream =new ByteArrayInputStream(getFormMsgByListFields(list,clazz).toString().getBytes());
+		    bufferedReader =new BufferedReader(new InputStreamReader(inputStream));
+			line="";
+			while ((line = bufferedReader.readLine()) != null) {
+				bufferedWriter.write(line+"\n");
+				System.out.println(line);
+				}
+			bufferedWriter.flush();
+			bufferedWriter.close();
 	}
 	//跟库class分析这个实体需要生成查询条件和table要先显示的列
 	public static StringBuffer getTableMsgByListFields(List<Field> list,Class<?>clazz){
@@ -353,11 +377,11 @@ public abstract class CreateUtils {
 			stringBuffer.append("   </div>\n");
 			stringBuffer.append("</template>\n");
 			stringBuffer.append("<script>\n");
-			stringBuffer.append("import { Component, Mixins } from 'vue-property-decorator'\n" +
+			stringBuffer.append("   import { Component, Mixins } from 'vue-property-decorator'\n" +
 								"   import TableBase from '../../../plugins/TableBase'\n");
 
 		stringBuffer.append("  @Component\n" +
-							"  export default class "+clazz.getSimpleName()+" Mixins(TableBase) {\n");
+							"  export default class "+clazz.getSimpleName()+"s extends Mixins(TableBase) {\n");
 		stringBuffer.append("\n" +
 							"    templateSearch = ' url like t and (url like t or  companyId eq 1)'\n" +
 							"\n" +
@@ -403,6 +427,8 @@ public abstract class CreateUtils {
 	//  根据字生成表单信息字段信息
 	public static StringBuffer getFormMsgByListFields(List<Field> list,Class<?>clazz){
 		List<Map<String,Object>> tabsList =new ArrayList<>();
+		Map<String,Object> flageMap =new HashMap<>();
+		tabsList.add(flageMap);
 		list.forEach(ele ->{
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("field",ele);
@@ -412,79 +438,149 @@ public abstract class CreateUtils {
 			if (ObjectUtils.isEmpty(classLoader)){
 				if (Collection.class.isAssignableFrom(fieldType)){
 					map.put("fieldType","collection");
+					flageMap.put("collection",null);
 					map.put("tlcass",MyClassUtil.getSuperClassGenricType(fieldType,0));
 				}else if (Map.class.isAssignableFrom(fieldType)){
 					map.put("fieldType","map");
+					flageMap.put("map",null);
 				}else {
 					map.put("fieldType","base");
+					flageMap.put("base",null);
 				}
 			}else {
 				map.put("fieldType","self");
 				map.put("tlcass",fieldType);
+				flageMap.put("self",null);
 			}
 			tabsList.add(map);
 		});
-
-		return null;
+		return createFormByListMsg(tabsList,clazz);
 	}
 
 	public  static  StringBuffer  createFormByListMsg(List<Map<String,Object>>  list,Class<?> clazz){
 		StringBuffer stringBuffer =new StringBuffer();
 		stringBuffer.append("<template>\n");
 		stringBuffer.append("   <div>\n");
-		for (int i = 0; i < list.size(); i++) {
-			
+		stringBuffer.append("    <el-form :model=\"formData\"\n" +
+							"                 :rules=\"rules\"\n" +
+							"                 ref=\"formData\"\n" +
+							"                 label-width=\"100px\"\n" +
+							"                 size=\"mini\">\n");
+		stringBuffer.append("      <el-tabs v-model=\"activeName\" @tab-click=\"handleClick\">\n");
+		Map<String,Object> flagmap =list.get(0);
+		if (flagmap.containsKey("base")){
+			stringBuffer.append("         <el-tab-pane label=\"基础信息\" name=\"base\">\n");
+			for (int i = 1; i < list.size(); i++) {
+				Map<String ,Object> map =list.get(i);
+				if ("base".equals(map.get("fieldType"))){
+					stringBuffer.append("            <el-row>\n");
+					stringBuffer.append("               <el-col :span=\"12\">\n");
+					Field field =(Field)map.get("field");
+					Description description = field.getAnnotation(Description.class);
+					String label=description!=null&&!"".equals( description.label())?description.label():field.getName();
+					stringBuffer.append("                  <el-form-item label=\""+label+"\" prop=\""+field.getName()+"\">\n");
+					stringBuffer.append("                      <el-input v-model=\"formData."+field.getName()+"\"/>\n");
+					stringBuffer.append("                  </el-form-item>\n");
+					stringBuffer.append("                </el-col>\n");
+					stringBuffer.append("            <el-row>\n");
+				}
+			}
+			stringBuffer.append("         </el-tab-pane>\n");
 		}
-		stringBuffer.append("   </div>\n");
+		if (flagmap.containsKey("collection")){
+			for (int i = 1; i < list.size(); i++) {
+				Map<String ,Object> map =list.get(i);
+				if ("collection".equals(map.get("fieldType"))){
+					Field field =(Field)map.get("field");
+					Description description = field.getAnnotation(Description.class);
+					String label=description!=null&&!"".equals( description.label())?description.label():field.getName();
+					Class tclass =(Class)map.get("tclass");
+					char[] chars =tclass.getSimpleName().toCharArray();
+					StringBuffer buffer = new StringBuffer();
+					for(int j = 0; j < chars.length ; j++){
+						if(chars[j] >= 'A' && chars[j] <= 'Z'){
+							if (j!=0){
+								buffer.append('-');
+							}
+							char t =(char) (chars[j]+ 32);
+							buffer.append(t);
+						}else {
+							buffer.append(chars[j]);
+						}
+					}
+					stringBuffer.append("         <el-tab-pane label=\""+label+"\" name=\""+field.getName()+"\">\n");;
+					stringBuffer.append("            <"+buffer.toString()+"/>\n");
+					stringBuffer.append("         </el-tab-pane>\n");
+				}
+			}
+		}
+		if (flagmap.containsKey("self")){
+			for (int i = 1; i < list.size(); i++) {
+				Map<String ,Object> map =list.get(i);
+				if ("self".equals(map.get("fieldType"))){
+					Field field =(Field)map.get("field");
+					Description description = field.getAnnotation(Description.class);
+					String label=description!=null&&!"".equals( description.label())?description.label():field.getName();
+					stringBuffer.append("         <el-tab-pane label=\""+label+"\" name=\""+field.getName()+"\">\n");;
+					stringBuffer.append("            <router-view/>\n");
+					stringBuffer.append("         </el-tab-pane>\n");
+				}
+			}
+		}
+		stringBuffer.append("      </el-tabs>\n");
+		stringBuffer.append("    </el-form>\n");
+ 		stringBuffer.append("   </div>\n");
 		stringBuffer.append("</template>\n");
-
-
 
 		stringBuffer.append("<script>\n");
 		stringBuffer.append("import { Component, Mixins } from 'vue-property-decorator'\n" +
-				"   import TableBase from '../../../plugins/TableBase'\n");
-
-		stringBuffer.append("  @Component\n" +
-				"  export default class "+clazz.getSimpleName()+" Mixins(TableBase) {\n");
-		stringBuffer.append("\n" +
-				"    templateSearch = ' url like t and (url like t or  companyId eq 1)'\n" +
-				"\n" +
-				"    serchObj = {}\n" +
-				"\n" +
-				"    params = {\n" +
-				"        pageSize: 50,\n" +
-				"        pageNum: 1\n" +
-				"    }\n" +
-				"    pageSizes = [50, 100, 200, 400]\n" +
-				"\n" +
-				"    tableData = []\n" +
-				"\n" +
-				"    controllerMapping = '"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"'\n");
-		stringBuffer.append("\n"+
-				"    handleSizeChange (val) {\n" +
-				"     this.params.pageSize = val\n" +
-				"      this.filterByserchObj()\n" +
-				"    }\n" +
-				"    handleCurrentChange (val) {\n" +
-				"      this.params.pageNum = val\n" +
-				"      this.filterByserchObj()\n" +
-				"    }\n");
-
-		stringBuffer.append("\n"+
-				"    filterByserchObj () {\n" +
-				"      this.search(this.templateSearch, this.serchObj, this.params, this.controllerMapping)\n" +
-				"          .then(ele => {\n" +
-				"            this.tableData = ele\n" +
-				"      })\n" +
-				"    }\n");
-
-		stringBuffer.append("\n"+
-				"    created () {\n" +
-				"      this.filterByserchObj()\n" +
-				"    }\n");
-		stringBuffer.append("  }\n");
+							"   import TableBase from '../../../plugins/TableBase'\n");
+		String component="  @Component";
+		if (flagmap.containsKey("collection")){
+			component += "({\n    components: {\n";
+			for (int i = 1; i < list.size(); i++) {
+				Map<String ,Object> map =list.get(i);
+				if ("collection".equals(map.get("fieldType"))){
+					Field field =(Field)map.get("field");
+					Class tclass =(Class)map.get("tclass");
+					component +=tclass.getSimpleName()+",\n";
+					stringBuffer.append("   import "+tclass.getSimpleName()+" from '../请修改路径/"+tclass.getSimpleName()+"'\n");
+				}
+			}
+			component += "    }\n  })\n";
+		}
+		stringBuffer.append(component +
+							"  export default class "+clazz.getSimpleName()+" extends Mixins(TableBase) {\n");
+		stringBuffer.append("    @Prop({ default: () => 'new' })\n" +
+							"    id\n");
+		stringBuffer.append("    activeName = 'base'\n");
+		stringBuffer.append("    controllerMapping = '"+clazz.getSimpleName().substring(0,1)+clazz.getSimpleName().substring(1)+"'\n");
+		stringBuffer.append("    rules = {\n" +
+							"          name: [\n" +
+							"            {required: true, message: '请输入活动名称', trigger: 'blur'},\n" +
+							"            {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}\n" +
+							"          ]\n" +
+							"        }\n");
+		stringBuffer.append("    handleClick (tab, event) {\n" +
+							"       /* if (tab.name === 'formtest') {\n" +
+							"            this.$router.push({name: 'tt', params: {rowData: {id: 'new'}}})\n" +
+							"          } */\n" +
+							"    }\n" +
+							"    submitForm (formName) {\n" +
+							"      this.$refs[formName].validate((valid) => {\n" +
+							"        if (valid) {\n" +
+							"         lert('submit!')\n" +
+							"        } else {\n" +
+							"          console.log('error submit!!')\n" +
+							"          return false\n" +
+							"       }\n" +
+							"     })\n" +
+							"   }\n");
+		stringBuffer.append("    created () {\n" +
+							"     this.getFormData(this.controllerMapping, this.id)\n" +
+							"    }\n");
+ 		stringBuffer.append("  }\n");
 		stringBuffer.append("</script>\n");
-
 		return stringBuffer;
 	}
 
@@ -494,7 +590,7 @@ public abstract class CreateUtils {
 		  String packgePath = packge.replaceAll("\\.","/");
 		  //根据包名加载Class
 		  Map<String,Object> objectMap =getClassByFile(new File(classpath+packgePath));
-		  String templatePath="D:\\code\\source\\ideaSource\\bigdata\\bigData\\core\\creatFile\\src\\main\\java\\com\\yhl\\create\\componet\\template";
-		  createFileByMap(objectMap,"D:\\JavaFile1",templatePath);
+		  String templatePath="F:\\bigdata\\bigData\\core\\creatFile\\src\\main\\java\\com\\yhl\\create\\componet\\template";
+		  createFileByMap(objectMap,"C:\\Users\\Administrator\\Desktop\\JavaFile1",templatePath);
 	}
 }
