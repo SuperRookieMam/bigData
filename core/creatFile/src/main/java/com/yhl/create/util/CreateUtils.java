@@ -285,22 +285,21 @@ public abstract class CreateUtils {
 						"              class=\"demo-form-inline\"\n" +
 						"              size=\"mini\"\n" +
 						"              label-width=\"80px\">\n");
-				int m=0;
-				int n=0;
+				int m=4;
 				for (int j = 0; j <searchList.size() ; j++) {
-					if ((j+1)%6==0&&(j+1)!=searchList.size()) {
+					if (m==4) {
 						stringBuffer.append("         <el-row>\n");
-						m+=1;
 					}
+					m -= 1;
 					Map<String,Object> ele =searchList.get(j);
 					if ("text".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">\n");
+						stringBuffer.append("            <el-col :span=\"6\">\n");
 						stringBuffer.append("                <el-form-item label=\""+ele.get("label")+"\">\n" +
 											"                   <el-input v-model=\"serchObj['"+ele.get("prop")+"']\"/>\n" +
 											"               </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					} else if ("time".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">\n");
+						stringBuffer.append("            <el-col :span=\"6\">\n");
 						stringBuffer.append("              <el-form-item label=\""+ele.get("label")+"\">\n" +
 											"                 <el-date-picker v-model=\"serchObj['"+ele.get("prop")+"']\"\n" +
 											"                                 type=\"datetime\"\n" +
@@ -309,7 +308,7 @@ public abstract class CreateUtils {
 											"              </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					}else if ("select".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">\n");
+						stringBuffer.append("            <el-col :span=\"6\">\n");
 						stringBuffer.append("                    <el-select v-model=\"serchObj['"+ele.get("prop")+"']\" placeholder=\""+ele.get("label")+"\">\n" +
 											"                      <el-option v-for=\"(item,index) in selectData\"\n" +
 											"                                               :key=\"index\"\n" +
@@ -319,7 +318,7 @@ public abstract class CreateUtils {
 											"               </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					}else if ("select".equalsIgnoreCase(ele.get("searchType").toString())){
-						stringBuffer.append("            <el-col :span=\"4\">\n");
+						stringBuffer.append("            <el-col :span=\"6\">\n");
 						stringBuffer.append("                    <el-select v-model=\"serchObj['"+ele.get("prop")+"']\" placeholder=\""+ele.get("label")+"\">\n" +
 											"                      <el-option v-for=\"(item,index) in selectData\"\n" +
 											"                                               :key=\"index\"\n" +
@@ -329,21 +328,23 @@ public abstract class CreateUtils {
 											"               </el-form-item>\n");
 						stringBuffer.append("            </el-col>\n");
 					}
-					stringBuffer.append("            <el-col :span=\"4\">\n");
-					stringBuffer.append("              <el-button type=\"primary\"\n" +
-										"                         size=\"mini\"\n" +
-										"                         @click=\"filterByserchObj()\">\n" +
-										"                            筛选\n" +
-										"                          </el-button>\n" +
-										"              <el-button type=\"primary\"\n" +
-										"                         size=\"mini\"\n" +
-										"                         @click=\"add('"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"')\">\n" +
-										"                            新增\n" +
-										"                          </el-button>\n");
-					stringBuffer.append("            </el-col>\n");
-					if (((j+1)%6==0&& m==n+1)||(j+1)!=searchList.size()) {
+					if (m == 0||(j+1)==searchList.size()) {
+						if ((j+1)==searchList.size()){
+							stringBuffer.append("            <el-col :span=\"6\">\n");
+							stringBuffer.append("              <el-button type=\"primary\"\n" +
+									"                         size=\"mini\"\n" +
+									"                         @click=\"filterByserchObj()\">\n" +
+									"                            筛选\n" +
+									"                          </el-button>\n" +
+									"              <el-button type=\"primary\"\n" +
+									"                         size=\"mini\"\n" +
+									"                         @click=\"add('"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"')\">\n" +
+									"                            新增\n" +
+									"                          </el-button>\n");
+							stringBuffer.append("            </el-col>\n");
+						}
 						stringBuffer.append("         </el-row>\n");
-						n+=1;
+						m=4;
 					}
 				}
 				stringBuffer.append("      </el-form>\n");
@@ -366,9 +367,9 @@ public abstract class CreateUtils {
 				stringBuffer.append("         <el-pagination\n" +
 									"               @size-change=\"handleSizeChange\"\n" +
 									"               @current-change=\"handleCurrentChange\"\n" +
-									"               :current-page=\"currentPage\"\n" +
+									"               :current-page=\"params.pageNum\"\n" +
 									"               :page-sizes=\"pageSizes\"\n" +
-									"               :page-size=\"currentPageSizes\"\n" +
+									"               :page-size=\"params.pageSize\"\n" +
 									"               layout=\"total, sizes, prev, pager, next, jumper\"\n" +
 									"               :total=\"totalPage\"/>\n");
 				stringBuffer.append("      </el-table>\n");
@@ -378,7 +379,7 @@ public abstract class CreateUtils {
 			stringBuffer.append("</template>\n");
 			stringBuffer.append("<script>\n");
 			stringBuffer.append("   import { Component, Mixins } from 'vue-property-decorator'\n" +
-								"   import TableBase from '../../../plugins/TableBase'\n");
+								"   import TableBase from '../../../../plugins/TableBase'\n");
 
 		stringBuffer.append("  @Component\n" +
 							"  export default class "+clazz.getSimpleName()+"s extends Mixins(TableBase) {\n");
@@ -410,7 +411,7 @@ public abstract class CreateUtils {
 							"    filterByserchObj () {\n" +
 							"      this.search(this.templateSearch, this.serchObj, this.params, this.controllerMapping)\n" +
 							"          .then(ele => {\n" +
-							"            this.tableData = ele\n" +
+							"            this.tableData = ele.data.list\n" +
 							"      })\n" +
 							"    }\n");
 
@@ -482,7 +483,7 @@ public abstract class CreateUtils {
 					stringBuffer.append("                      <el-input v-model=\"formData."+field.getName()+"\"/>\n");
 					stringBuffer.append("                  </el-form-item>\n");
 					stringBuffer.append("                </el-col>\n");
-					stringBuffer.append("            <el-row>\n");
+					stringBuffer.append("            </el-row>\n");
 				}
 			}
 			stringBuffer.append("         </el-tab-pane>\n");
@@ -533,8 +534,8 @@ public abstract class CreateUtils {
 		stringBuffer.append("</template>\n");
 
 		stringBuffer.append("<script>\n");
-		stringBuffer.append("import { Component, Mixins } from 'vue-property-decorator'\n" +
-							"   import TableBase from '../../../plugins/TableBase'\n");
+		stringBuffer.append("import { Component, Prop, Mixins } from 'vue-property-decorator'\n" +
+							"   import TableBase from '../../../../plugins/TableBase'\n");
 		String component="  @Component";
 		if (flagmap.containsKey("collection")){
 			component += "({\n    components: {\n";
@@ -549,12 +550,12 @@ public abstract class CreateUtils {
 			}
 			component += "    }\n  })\n";
 		}
-		stringBuffer.append(component +
+		stringBuffer.append((component.endsWith("\n")?component:(component +"\n"))+
 							"  export default class "+clazz.getSimpleName()+" extends Mixins(TableBase) {\n");
 		stringBuffer.append("    @Prop({ default: () => 'new' })\n" +
 							"    id\n");
 		stringBuffer.append("    activeName = 'base'\n");
-		stringBuffer.append("    controllerMapping = '"+clazz.getSimpleName().substring(0,1)+clazz.getSimpleName().substring(1)+"'\n");
+		stringBuffer.append("    controllerMapping = '"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"'\n");
 		stringBuffer.append("    rules = {\n" +
 							"          name: [\n" +
 							"            {required: true, message: '请输入活动名称', trigger: 'blur'},\n" +
@@ -569,7 +570,7 @@ public abstract class CreateUtils {
 							"    submitForm (formName) {\n" +
 							"      this.$refs[formName].validate((valid) => {\n" +
 							"        if (valid) {\n" +
-							"         lert('submit!')\n" +
+							"         alert('submit!')\n" +
 							"        } else {\n" +
 							"          console.log('error submit!!')\n" +
 							"          return false\n" +
@@ -590,7 +591,7 @@ public abstract class CreateUtils {
 		  String packgePath = packge.replaceAll("\\.","/");
 		  //根据包名加载Class
 		  Map<String,Object> objectMap =getClassByFile(new File(classpath+packgePath));
-		  String templatePath="F:\\bigdata\\bigData\\core\\creatFile\\src\\main\\java\\com\\yhl\\create\\componet\\template";
-		  createFileByMap(objectMap,"C:\\Users\\Administrator\\Desktop\\JavaFile1",templatePath);
+		  String templatePath="D:\\code\\source\\ideaSource\\bigdata\\bigData\\core\\creatFile\\src\\main\\java\\com\\yhl\\create\\componet\\template";
+		  createFileByMap(objectMap,"D:\\JavaFile1",templatePath);
 	}
 }
