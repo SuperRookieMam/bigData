@@ -71,7 +71,7 @@ public class BaseServiceImpl<T extends BaseEntity,ID extends Serializable> imple
 
     @Override
     public <T> ResultDto findById(ID id) {
-        T entity= (T) baseDao.getOne(id);
+        T entity= (T) baseDao.findById(id).get();
         return ResultDto.success(entity);
     }
 

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -44,4 +45,6 @@ public class Company extends BaseEntity {
     //法人代表id
     @Column(name = "legal_person_id")
     private String legalPersonId;
+    @Transient
+    private LocalDateTime localDateTime = LocalDateTime.now();
 }

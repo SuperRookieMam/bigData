@@ -1,8 +1,6 @@
 package com.yhl.orm.componet.config;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.yhl.orm.componet.factory.BaseDaoFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,9 +16,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 @Configuration
@@ -88,16 +83,5 @@ public class JpaConfigration {
         txManager.setEntityManagerFactory(entityManagerFactory ().getObject());
         return txManager;
     }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-    }
-
-    @Bean("filedMap")
-    public LinkedHashMap<Class,Map<String,Field>> classField() {
-        return new LinkedHashMap<>();
-    }
-
 
 }

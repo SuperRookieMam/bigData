@@ -360,11 +360,12 @@ public abstract class CreateUtils {
 				});
 				stringBuffer.append("         <el-table-column label=\"操作\" :min-width=\"60\">\n" +
 									"                 <template slot-scope=\"scope\">\n" +
-									"                   <el-button type=\"text\" size=\"mini\" @click=\"edit('"+clazz.getSimpleName().substring(0,1).toLowerCase()+clazz.getSimpleName().substring(1)+"',scope.row)\">编辑</el-button>\n" +
-									"                   <el-button type=\"text\" size=\"mini\" @click=\"delete(scope.row)\">删除</el-button>\n" +
+									"                   <el-button type=\"text\" size=\"mini\" @click=\"edit(controllerMapping,scope.row)\">编辑</el-button>\n" +
+									"                   <el-button type=\"text\" size=\"mini\" @click=\"deleteRow(controllerMapping,scope.row)\">删除</el-button>\n" +
 									"                 </template>\n" +
 									"         </el-table-column>\n");
-				stringBuffer.append("         <el-pagination\n" +
+				stringBuffer.append("      </el-table>\n");
+				stringBuffer.append("      <el-pagination\n" +
 									"               @size-change=\"handleSizeChange\"\n" +
 									"               @current-change=\"handleCurrentChange\"\n" +
 									"               :current-page=\"params.pageNum\"\n" +
@@ -372,7 +373,7 @@ public abstract class CreateUtils {
 									"               :page-size=\"params.pageSize\"\n" +
 									"               layout=\"total, sizes, prev, pager, next, jumper\"\n" +
 									"               :total=\"totalPage\"/>\n");
-				stringBuffer.append("      </el-table>\n");
+
 			}
 
 			stringBuffer.append("   </div>\n");
@@ -474,9 +475,11 @@ public abstract class CreateUtils {
 			for (int i = 1; i < list.size(); i++) {
 				Map<String ,Object> map =list.get(i);
 				if ("base".equals(map.get("fieldType"))){
+					Field field =(Field)map.get("field");
+					if ("serialVersionUID,createTime,modifyTime,createUser,modifyUser,id".contains(field.getName()))
+						continue;
 					stringBuffer.append("            <el-row>\n");
 					stringBuffer.append("               <el-col :span=\"12\">\n");
-					Field field =(Field)map.get("field");
 					Description description = field.getAnnotation(Description.class);
 					String label=description!=null&&!"".equals( description.label())?description.label():field.getName();
 					stringBuffer.append("                  <el-form-item label=\""+label+"\" prop=\""+field.getName()+"\">\n");
@@ -528,6 +531,18 @@ public abstract class CreateUtils {
 				}
 			}
 		}
+		stringBuffer.append("        <el-row>\n" +
+							"          <el-col :span=\"12\">\n" +
+							"            <el-form-item>\n" +
+							"              <el-button type=\"primary\" @click=\"submitForm('formData')\">\n" +
+							"                保存\n" +
+							"              </el-button>\n" +
+							"              <el-button @click=\"resetForm('formData')\">\n" +
+							"                取消\n" +
+							"              </el-button>\n" +
+							"            </el-form-item>\n" +
+							"          </el-col>\n" +
+							"        </el-row>\n");
 		stringBuffer.append("      </el-tabs>\n");
 		stringBuffer.append("    </el-form>\n");
  		stringBuffer.append("   </div>\n");
@@ -566,17 +581,7 @@ public abstract class CreateUtils {
 							"       /* if (tab.name === 'formtest') {\n" +
 							"            this.$router.push({name: 'tt', params: {rowData: {id: 'new'}}})\n" +
 							"          } */\n" +
-							"    }\n" +
-							"    submitForm (formName) {\n" +
-							"      this.$refs[formName].validate((valid) => {\n" +
-							"        if (valid) {\n" +
-							"         alert('submit!')\n" +
-							"        } else {\n" +
-							"          console.log('error submit!!')\n" +
-							"          return false\n" +
-							"       }\n" +
-							"     })\n" +
-							"   }\n");
+							"    }\n");
 		stringBuffer.append("    created () {\n" +
 							"     this.getFormData(this.controllerMapping, this.id)\n" +
 							"    }\n");
@@ -591,7 +596,7 @@ public abstract class CreateUtils {
 		  String packgePath = packge.replaceAll("\\.","/");
 		  //根据包名加载Class
 		  Map<String,Object> objectMap =getClassByFile(new File(classpath+packgePath));
-		  String templatePath="D:\\code\\source\\ideaSource\\bigdata\\bigData\\core\\creatFile\\src\\main\\java\\com\\yhl\\create\\componet\\template";
-		  createFileByMap(objectMap,"D:\\JavaFile1",templatePath);
+		  String templatePath="F:\\bigdata\\bigData\\core\\creatFile\\src\\main\\java\\com\\yhl\\create\\componet\\template";
+		  createFileByMap(objectMap,"C:\\Users\\Administrator\\Desktop\\JavaFile1",templatePath);
 	}
 }

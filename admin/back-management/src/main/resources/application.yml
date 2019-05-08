@@ -9,4 +9,3 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
   application:
     name: oauth2Server
-  jacksondate-format: yyyy-MM-dd HH:mm:ss

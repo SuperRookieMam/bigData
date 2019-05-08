@@ -1,5 +1,6 @@
 package com.yhl.base.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties(value = {"createTime", "modifyTime","createUser","modifyUser"})
 public class BaseEntity implements Serializable {
     private static final long serialVersionUID = 1127874074039848204L;
 
@@ -26,7 +28,7 @@ public class BaseEntity implements Serializable {
     private LocalDateTime createTime ;
 
     @LastModifiedDate
-    @Column(name = "modify_time")
+    @Column(name = "modify_time",updatable = false)
     private LocalDateTime modifyTime ;
 
     @CreatedBy
@@ -34,6 +36,6 @@ public class BaseEntity implements Serializable {
     private String createUser;
 
     @LastModifiedBy
-    @Column(name = "create_user" )
+    @Column(name = "create_user" ,updatable = false)
     private String modifyUser;
 }

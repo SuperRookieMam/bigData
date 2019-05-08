@@ -53,7 +53,8 @@
                    <el-button type="text" size="mini" @click="deleteRow(controllerMapping,scope.row)">编辑</el-button>
                  </template>
          </el-table-column>
-         <el-pagination
+      </el-table>
+      <el-pagination
                @size-change="handleSizeChange"
                @current-change="handleCurrentChange"
                :current-page="params.pageNum"
@@ -61,7 +62,6 @@
                :page-size="params.pageSize"
                layout="total, sizes, prev, pager, next, jumper"
                :total="totalPage"/>
-      </el-table>
    </div>
 </template>
 <script>
