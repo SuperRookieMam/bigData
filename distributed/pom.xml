@@ -19,6 +19,7 @@
         <module>elasticSerch</module>
         <module>hive</module>
         <module>hbase</module>
+        <module>integrate</module>
     </modules>
     <packaging>pom</packaging>
 
