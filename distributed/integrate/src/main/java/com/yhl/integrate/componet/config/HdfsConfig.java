@@ -2,9 +2,12 @@ package com.yhl.integrate.componet.config;
 
 import com.yhl.integrate.util.HdfsUtile;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.spark.SparkConf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Configuration
 @Component
@@ -29,10 +32,36 @@ public class HdfsConfig {
         configuration.set("dfs.client.block.write.replace-datanode-on-failure.enable","NEVER");
         //HDFS的实现类
         configuration.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
+
+        //  yarn配置 还需要配置需要
+        configuration.set("mapreduce.framework.name","yarn");
+        configuration.set("yarn.resourcemanager.hostname","node-2");
+        //如果要在windows上运行需要加跨平台提交参数
+        configuration.set("mapreduce.app-submission.cross-platform","true");
+        configuration.set("mapreduce.application.classpath", "/usr/local/hadoop/etc/hadoop:/usr/local/hadoop/share/hadoop/common/lib/*:/usr/local/hadoop/share/hadoop/common/*:/usr/local/hadoop/share/hadoop/hdfs:/usr/local/hadoop/share/hadoop/hdfs/lib/*:/usr/local/hadoop/share/hadoop/hdfs/*:/usr/local/hadoop/share/hadoop/mapreduce/lib/*:/usr/local/hadoop/share/hadoop/mapreduce/*:/usr/local/hadoop/share/hadoop/yarn:/usr/local/hadoop/share/hadoop/yarn/lib/*:/usr/local/hadoop/share/hadoop/yarn/*");
+        configuration.set("yarn.nodemanager.aux-services","mapreduce_shuffle");
+        configuration.set("mapreduce.jobhistory.address","master:10020" );
+        configuration.set("mapreduce.jobhistory.webapp.address","master:19888" ); ;
+
         return configuration;
     }
     @Bean
     public HdfsUtile getHdfsUtile(){
         return new HdfsUtile();
     }
+//    注意这个没哟
+    @Bean
+    public SparkConf getSparkConf() throws IOException {
+        //设置虚拟机参数
+        System.setProperty("HADOOP_USER_NAME", "root");
+        System.setProperty("user.name", "root");
+        // spark配置
+        SparkConf sparkConf=new SparkConf().setAppName("test");
+
+
+
+        return sparkConf;
+    }
+
+
 }

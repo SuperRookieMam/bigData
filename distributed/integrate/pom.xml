@@ -14,11 +14,6 @@
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
-       <!-- <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>-->
         <!--HADOOP客户端依赖-->
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -46,19 +41,36 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.12</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-
-
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-yarn_2.12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+        </dependency>
         <!--scala相关依赖-->
        <!-- <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
         </dependency>
         &lt;!&ndash;spark 2.11 依赖&ndash;&gt;
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.11</artifactId>
-        </dependency>
+
 
 
         &lt;!&ndash;elsearch 依赖 &ndash;&gt;
@@ -107,7 +119,36 @@
                 </exclusion>
             </exclusions>
         </dependency>-->
+        <!--<dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-hive_2.11</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>${spark.version}</version>
+            &lt;!&ndash;  <scope>provided</scope>&ndash;&gt;
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_2.11</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            &lt;!&ndash;<artifactId>spark-streaming-kafka_2.11</artifactId>&ndash;&gt;
+            <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
+            &lt;!&ndash;<version>1.6.1</version>&ndash;&gt;
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+
+        </dependency>-->
     </dependencies>
 
 </project>
