@@ -52,7 +52,7 @@
         <hadoop.version>3.1.2</hadoop.version>
         <hadoop-boot.version>2.5.0.RELEASE</hadoop-boot.version>
         <spark.version>2.4.3</spark.version>
-        <scala.version>2.12.8</scala.version>
+        <scala.version>2.11.8</scala.version>
         <manven.scala.version>2.15.1</manven.scala.version>
         <elserch.version>6.7.1</elserch.version>
         <hive.version>3.1.1</hive.version>
@@ -215,12 +215,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-core_2.12</artifactId>
+                <artifactId>spark-core_2.11</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-yarn_2.12</artifactId>
+                <artifactId>spark-yarn_2.11</artifactId>
                 <version>${spark.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -482,6 +482,9 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
+                    <compilerArguments>
+                        <bootclasspath>${java.home}/lib/rt.jar</bootclasspath>
+                    </compilerArguments>
                 </configuration>
                 <executions>
                     <execution>

@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,9 @@ import java.util.List;
  * 只是为操作的时候，直接传字符串，而不用取new path 啊什么的，
  * 初始化一个config配置的FileSystem，其实也是直接调用FileSystem工具类
  * */
-public class HdfsUtile {
+public class HdfsUtile implements Serializable {
 
+    private static final long serialVersionUID = 6072549306149173532L;
     private FileSystem fileSystem ;
 
     public HdfsUtile(){

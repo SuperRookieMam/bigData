@@ -5,9 +5,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-@Component
-public class SpringUtil implements ApplicationContextAware {
+import java.io.Serializable;
 
+@Component
+public class SpringUtil implements ApplicationContextAware , Serializable {
+
+    private static final long serialVersionUID = -2615108791742422477L;
     private static ApplicationContext applicationContext;
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

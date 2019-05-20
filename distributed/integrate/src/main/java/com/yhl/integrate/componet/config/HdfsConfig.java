@@ -8,10 +8,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 @Configuration
 @Component
-public class HdfsConfig {
+public class HdfsConfig implements Serializable {
+
+    private static final long serialVersionUID = 7344801570401642836L;
 
     @Bean(name = "hdfsConfiguration")
     public org.apache.hadoop.conf.Configuration  getHdfdconfig(){
@@ -56,10 +59,14 @@ public class HdfsConfig {
         System.setProperty("HADOOP_USER_NAME", "root");
         System.setProperty("user.name", "root");
         // spark配置
-        SparkConf sparkConf=new SparkConf().setAppName("test");
-
-
-
+        SparkConf sparkConf=new SparkConf()
+                                .setAppName("test")
+                                .setMaster("node-2")
+                                .set("deploy-mode", "client")
+                                .set("spark.yarn.jars", "hdfs://master:8020/user/local/usrData/spark/jars/*")
+                                .set("spark.yarn.archive", "hdfs://master:8020/user/local/usrData/spark/*") //集群的jars包,是你自己上传上去的
+                                .setJars(new String[]{"/home/lee/IdeaProjects/test/target/scala-2.11/test_2.11-0.1.jar"}) //这是sbt打包后的文件
+                                .setIfMissing("spark.driver.host","master");
         return sparkConf;
     }
 
