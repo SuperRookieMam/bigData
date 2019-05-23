@@ -2,12 +2,10 @@ package com.yhl.integrate.componet.config;
 
 import com.yhl.integrate.util.HdfsUtile;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.spark.SparkConf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 @Configuration
@@ -53,22 +51,22 @@ public class HdfsConfig implements Serializable {
         return new HdfsUtile();
     }
 //    注意这个没哟
-    @Bean
-    public SparkConf getSparkConf() throws IOException {
-        //设置虚拟机参数
-        System.setProperty("HADOOP_USER_NAME", "root");
-        System.setProperty("user.name", "root");
-        // spark配置
-        SparkConf sparkConf=new SparkConf()
-                                .setAppName("test")
-                                .setMaster("node-2")
-                                .set("deploy-mode", "client")
-                                .set("spark.yarn.jars", "hdfs://master:8020/user/local/usrData/spark/jars/*")
-                                .set("spark.yarn.archive", "hdfs://master:8020/user/local/usrData/spark/*") //集群的jars包,是你自己上传上去的
-                                .setJars(new String[]{"/home/lee/IdeaProjects/test/target/scala-2.11/test_2.11-0.1.jar"}) //这是sbt打包后的文件
-                                .setIfMissing("spark.driver.host","master");
-        return sparkConf;
-    }
+//    @Bean
+//    public SparkConf getSparkConf() throws IOException {
+//        //设置虚拟机参数
+//        System.setProperty("HADOOP_USER_NAME", "root");
+//        System.setProperty("user.name", "root");
+//        // spark配置
+//        SparkConf sparkConf=new SparkConf()
+//                                .setAppName("test")
+//                                .setMaster("node-2")
+//                                .set("deploy-mode", "client")
+//                                .set("spark.yarn.jars", "hdfs://master:8020/user/local/usrData/spark/jars/*")
+//                                .set("spark.yarn.archive", "hdfs://master:8020/user/local/usrData/spark/*") //集群的jars包,是你自己上传上去的
+//                                .setJars(new String[]{"/home/lee/IdeaProjects/test/target/scala-2.11/test_2.11-0.1.jar"}) //这是sbt打包后的文件
+//                                .setIfMissing("spark.driver.host","master");
+//        return sparkConf;
+//    }
 
 
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+    <property>
+        <name>dfs.replication</name>
+        <value>2</value>
+        <description>保存的副本数量</description>
+    </property>
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:/usr/local/usrData/hadoop</value>
+        <description>命名空间和事务在本地文件系统永久存储的路径</description>
+    </property>
+   
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:/usr/local/usrData/hadoop/dfs/data</value>
+        <description>命名空间和事务在本地文件系统永久存储的路径</description>
+    </property>
+    <property>
+        <name>dfs.blocksize</name>
+        <value>134217728</value>
+        <description>大文件系统HDFS块大小为64M，默认值为64M,不配置也是64M</description>
+    </property>
+    <property>
+        <name>dfs.namenode.handler.count</name>
+        <value>100</value>
+        <description>更多的NameNode服务器线程处理来自DataNodes的RPCS</description>
+    </property>
+
+</configuration>
