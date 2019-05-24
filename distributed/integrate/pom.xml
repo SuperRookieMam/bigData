@@ -64,15 +64,24 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
         </dependency>
-        <!--scala相关依赖-->
-       <!-- <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
+        <!--<dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
         </dependency>
-        &lt;!&ndash;spark 2.11 依赖&ndash;&gt;
-
-
-
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_2.11</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka_2.11</artifactId>
+        </dependency>
+        <!--scala相关依赖-->
+       <!--
         &lt;!&ndash;elsearch 依赖 &ndash;&gt;
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
@@ -133,12 +142,7 @@
             &lt;!&ndash;  <scope>provided</scope>&ndash;&gt;
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming_2.11</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>
+
 
         <dependency>
             <groupId>org.apache.spark</groupId>
