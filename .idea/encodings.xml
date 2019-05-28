@@ -21,6 +21,7 @@
     <file url="file://$PROJECT_DIR$/distributed/hadoop/mappreduce" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/distributed/hbase" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/distributed/hive" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/distributed/integrate" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/distributed/spark" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/test" charset="UTF-8" />
   </component>

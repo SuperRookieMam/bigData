@@ -14,6 +14,7 @@
         <module name="hbase" />
         <module name="hdfs" />
         <module name="hive" />
+        <module name="integrate" />
         <module name="mappreduce" />
         <module name="oauthCommon" />
         <module name="oauthServer" />
@@ -24,8 +25,6 @@
         <module name="test" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="back-management (1)" target="1.8" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="8" />
   </component>
 </project>

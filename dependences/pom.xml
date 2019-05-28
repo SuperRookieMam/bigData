@@ -272,6 +272,16 @@
                 <version>${elserch.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch-hadoop</artifactId>
+                <version>${elserch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch-spark-20_2.10</artifactId>
+                <version>${elserch.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.elasticsearch.plugin</groupId>
                 <artifactId>transport-netty4-client</artifactId>
                 <version>${elserch.version}</version>
