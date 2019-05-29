@@ -2,10 +2,9 @@ package com.yhl.test.test;
 
 import org.bytedeco.javacpp.avcodec;
 import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.OpenCVFrameConverter;
+import org.bytedeco.javacv.*;
+
+import javax.swing.*;
 
 public class Test {
 
@@ -60,17 +59,29 @@ public class Test {
         recorder.start();
 
 
-        int count = 0;
-        while(!exit){
-            count++;
-            Frame frame = grabber.grabImage();
-            if(frame == null){
-                continue;
+        //create a frame for real-time image display 创建一个实时贞
+        CanvasFrame frame = new CanvasFrame("camera", CanvasFrame.getDefaultGamma() / grabber.getGamma());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setAlwaysOnTop(true);
+        //不知道为什么这里不做转换就不能推到rtmp
+        Frame rotatedFrame=conveter.convert(grabbedImage);
+
+
+        long startTime=0;
+        long videoTS=0;
+        while(frame.isVisible() && (grabbedImage = conveter.convert(grabber.grab())) != null){
+            rotatedFrame = conveter.convert(grabbedImage);
+            frame.showImage(rotatedFrame);
+            if (startTime == 0) {
+                startTime = System.currentTimeMillis();
             }
-            if(count % 100 == 0){
-                System.out.println("count="+frame.image);
-            }
-            recorder.record(frame);
+
+            //时间间隔毫秒*1000？
+            videoTS = 1000 * (System.currentTimeMillis() - startTime);
+            recorder.setTimestamp(videoTS);
+            recorder.record(rotatedFrame);
+            System.out.println("推流中。。。。。");
+            Thread.sleep(40);
         }
 
         grabber.stop();
