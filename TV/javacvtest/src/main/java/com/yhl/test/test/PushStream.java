@@ -16,9 +16,8 @@ public class PushStream {
      * @author eguid
      * @param outputFile -录制的文件路径，也可以是rtsp或者rtmp等流媒体服务器发布地址
      * @param frameRate - 视频帧率
-     * @param inputType - 输入路径，0 = 不录制，1=录制
      */
-    public static void recordCamera(String outputFile,int inputType ,double frameRate) throws Exception {
+    public static void recordCamera(String outputFile ,double frameRate) throws Exception {
         Loader.load(opencv_objdetect.class);
         //本机摄像头默认0，这里使用javacv的抓取器，至于使用的是ffmpeg还是opencv，请自行查看源码
         FrameGrabber grabber = FrameGrabber.createDefault(0);
@@ -77,7 +76,7 @@ public class PushStream {
     }
 
     public static void main(String[] args) throws Exception{
-        recordCamera("output.mp4",1,25);
-       // recordCamera("rtmp://192.168.30.21/live/record1",25);
+        //recordCamera("output.mp4",1,25);
+         recordCamera("rtmp://192.168.43.148/live/record1",25);
     }
 }
