@@ -109,7 +109,7 @@ public class ApullStream {
     }
 
     public static void main(String[] args) {
-        String inputFile = "rtmp://192.168.43.148/live/record1";
+        String inputFile = "rtmp://10.10.0.55/live/record1";
 
         String outputFile = "test.flv";
         frameRecord(inputFile, outputFile, 1);

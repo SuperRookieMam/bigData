@@ -77,6 +77,6 @@ public class PushStream {
 
     public static void main(String[] args) throws Exception{
         //recordCamera("output.mp4",1,25);
-         recordCamera("rtmp://192.168.43.148/live/record1",25);
+         recordCamera("rtmp://10.10.0.55/live/record1",25);
     }
 }
