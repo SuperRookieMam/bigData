@@ -11,6 +11,8 @@
     	#流整合的最大的块大小。默认值为 4096。
     	#这个值设置的越大 CPU 负载就越小。这个值不能低于 128。
         chunk_size 4000;
+        // 开启回调 推流 拉流,对应的需要回到地址等
+        publish_notify on;
         #开始推流回调，url地址为java接口
         #on_publish http://localhost:8089/cloudLive/vin/auth;
         #推流停止回调，url地址为java接口
