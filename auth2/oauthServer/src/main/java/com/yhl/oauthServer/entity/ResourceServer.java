@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "resource_server")
 public class ResourceServer extends BaseEntity {
-
+    private static final long serialVersionUID = 6572448256141191118L;
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

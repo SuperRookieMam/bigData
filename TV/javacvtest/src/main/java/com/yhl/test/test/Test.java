@@ -11,13 +11,12 @@ public class Test {
     static boolean exit  = false;
     public static void main(String[] args) throws Exception {
         System.out.println("start...");
-        String rtmpPath = "rtmp://192.168.43.148:1935/live";
-        String rtspPath ="C:\\Users\\绝世好男人\\Desktop\\test.mp4";
+        String rtmpPath = "rtmp://10.10.1.101:1935/live/test?pushPassword=123456";
+        String rtspPath ="C:\\Users\\Administrator\\Desktop\\test.mp4";
 
         int audioRecord =0; // 0 = 不录制，1=录制
         boolean saveVideo = false;
         push(rtmpPath,rtspPath,audioRecord,saveVideo);
-
         System.out.println("end...");
     }
     /**

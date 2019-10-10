@@ -20,6 +20,8 @@ public class ApullStream {
         boolean isStart = true;
         // 获取视频源
         FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputFile);
+        // 使用tcp的方式，不然会丢包很严重
+        grabber.setOption("rtsp_transport", "tcp");
         // 流媒体输出地址，分辨率（长，高），是否录制音频（0:不录制/1:录制）
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(outputFile, 1280, 720, audioChannel);
         // 开始取视频源
