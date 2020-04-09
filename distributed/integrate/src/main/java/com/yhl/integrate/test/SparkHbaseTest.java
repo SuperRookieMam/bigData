@@ -38,7 +38,7 @@ public class SparkHbaseTest {
          //设置应用名称，就是在spark web端显示的应用名称，当然还可以设置其它的，在提交的时候可以指定，所以不用set上面两行吧
          SparkConf confsp=new SparkConf().setAppName("SparkHBaseTest");
          //创建spark操作环境对象
-        JavaSparkContext sc = new JavaSparkContext(confsp);
+         JavaSparkContext sc = new JavaSparkContext(confsp);
 //        JavaSparkContext sc = new JavaSparkContext("yarn-client", "hbaseTest",
 //                System.getenv("SPARK_HOME"), System.getenv("JARS"));
         //sc.addJar("D:\\jiuzhouwork\\other\\sparklibex\\spark-examples-1.6.1-hadoop2.7.1.jar");

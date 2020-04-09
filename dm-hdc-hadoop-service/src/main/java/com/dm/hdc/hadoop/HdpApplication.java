@@ -1,11 +1,10 @@
-package com.yhl.hdfs;
+package com.dm.hdc.hadoop;
 
-import com.yhl.hdfs.util.HdfsFileUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Test {
+public class HdpApplication {
     /**
      *注意org.apache.hadoop.security.AccessControlException: Permission denied
      * 解决办法有几种如下
@@ -20,14 +19,8 @@ public class Test {
      *  5. 代码中设置系统变量，需在加载配置类创建 fileSystem 对象前
      * */
     public static void main(String[] args) throws Exception {
-      SpringApplication.run(Test.class, args);
-      HdfsFileUtil.upfile("C:\\Users\\Administrator\\Desktop\\info.log","/test","cover");
-      // HdfsFileUtil.downLoad("/kk/_SUCCESS","C:\\Users\\Administrator\\Desktop\\test");
-       // HdfsFileUtil.downLoad("/kk/part-r-00000","C:\\Users\\Administrator\\Desktop\\test");
-     // System.out.println("亲测可用");
-     //   FsShellUtil fsShellUtil =new FsShellUtil();
-     //fsShellUtil.run(" hadoop fs -ls /");
+        System.setProperty("HADOOP_USER_NAME" , "hadoop");
+        SpringApplication.run(HdpApplication.class, args);
     }
-
 
 }

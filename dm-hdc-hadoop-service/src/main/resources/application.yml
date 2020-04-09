@@ -1,0 +1,58 @@
+server:
+  port: 8004
+
+hadoop:
+  hdfs:
+    fs.defaultFS: hdfs://10.10.1.105:9000
+    mapreduce.framework.name: yarn
+  yarn:
+    mapreduce.framework.name: yarn
+    yarn.resourcemanager.hostname: 10.10.1.105
+    # 一下参数是在windows 上跨平台需要提交的测参数，发布的时候需要屏蔽
+  #  fs.hdfs.impl: org.apache.hadoop.hdfs.DistributedFileSystem
+    fs.defaultFS: hdfs://10.10.1.105:9000
+    # mapreduce.app-submission.cross-platform: true
+    # 指定jarclasspanth 的搜搜路径
+    mapreduce.application.classpath: /usr/local/hadoop/etc/hadoop:/usr/local/hadoop/share/hadoop/common/lib/*:/usr/local/hadoop/share/hadoop/common/*:/usr/local/hadoop/share/hadoop/hdfs:/usr/local/hadoop/share/hadoop/hdfs/lib/*:/usr/local/hadoop/share/hadoop/hdfs/*:/usr/local/hadoop/share/hadoop/mapreduce/lib/*:/usr/local/hadoop/share/hadoop/mapreduce/*:/usr/local/hadoop/share/hadoop/yarn:/usr/local/hadoop/share/hadoop/yarn/lib/*:/usr/local/hadoop/share/hadoop/yarn/*:/usr/local/spark3.0/examples/jars/*
+    mapreduce.jobhistory.address: 10.10.1.105
+    mapreduce.jobhistory.webapp.address: 10.10.1.105
+    # 指定resourcemanager
+    yarn.resourcemanager.address: 10.10.1.105:8032
+    # 指定资源分配器
+    yarn.resourcemanager.scheduler.address: 10.10.1.105:8030
+  spark:
+    # 设置executor的个数
+    spark.executor.instance: 2
+    #设置executor的内存大小
+    spark.executor.memory: 1024M
+    # 设置提交任务的yarn队列
+    spark.yarn.queue: spark
+    # 设置driver的ip地址
+    spark.driver.host: 10.10.0.107
+    # 序列化工具
+    spark.serializer: org.apache.spark.serializer.KryoSerialize
+    # 指定地址
+    yarn.resourcemanager.hostname: 10.10.1.105
+  hbase:
+    hbase.zookeeper.quorum: 10.10.1.106
+    hbase.zookeeper.port: 2181
+    hbase.master.info.port: 10610
+  kafakaProductor:
+    bootstrap.servers: 10.10.1.106:9092
+    transactional.id:  transactional-id-1
+  kafakaCustomer:
+    bootstrap.servers: 10.10.1.106:9092
+    group.id: first
+    client.id: first
+    enable.auto.commit: false
+    key.serializer: org.apache.kafka.common.serialization.StringSerializer
+    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value.serializer: org.apache.kafka.common.serialization.StringSerializer
+    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  flumeClient:
+    # client.type: default_loadbalance
+    hosts: dm106
+    hosts.dm106: 10.10.1.106:44444
+    #host-selector: random
+    #backoff: true
+    #maxBackoff: 10000

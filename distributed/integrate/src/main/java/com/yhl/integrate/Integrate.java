@@ -1,17 +1,16 @@
 package com.yhl.integrate;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.yhl.integrate.test.HiveTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.Serializable;
 
-//@SpringBootApplication
+@SpringBootApplication
 public class Integrate implements Serializable {
     private static final long serialVersionUID = 6439426974989257703L;
 
     public static void main(String[] args) throws Exception {
-         //SpringApplication.run(Integrate.class, args);
+          SpringApplication.run(Integrate.class, args);
            // HdfsUtile hdfsUtile =new HdfsUtile();
            // File file =new File("C:\\Users\\Administrator\\Desktop\\测试文本.txt");
            // InputStream inputStream =new FileInputStream(file);
@@ -35,14 +34,14 @@ public class Integrate implements Serializable {
 //                "hdfs://10.10.0.55:9000/spark/1.jar"
 //        };
 //        SparkSubmit.main(argss);
-        DruidDataSource druidDataSource =new DruidDataSource();
-        druidDataSource.setUrl("jdbc:mysql://10.10.0.107:3306/hive?createDatabaseIfNotExist=true");
-        druidDataSource.setUsername("root");
-        druidDataSource.setPassword("123456");
-        druidDataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(druidDataSource);
-        HiveTest hiveTest =   new HiveTest(jdbcTemplate);
-        System.out.println(hiveTest.createTable());
+//        DruidDataSource druidDataSource =new DruidDataSource();
+//        druidDataSource.setUrl("jdbc:mysql://10.10.0.107:3306/hive?createDatabaseIfNotExist=true");
+//        druidDataSource.setUsername("root");
+//        druidDataSource.setPassword("123456");
+//        druidDataSource.setDriverClassName("com.mysql.jdbc.Driver");
+//        JdbcTemplate jdbcTemplate = new JdbcTemplate(druidDataSource);
+//        HiveTest hiveTest =   new HiveTest(jdbcTemplate);
+//        System.out.println(hiveTest.createTable());
 
        }
 }

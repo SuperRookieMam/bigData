@@ -16,7 +16,7 @@ public class HdfsConfig {
         /**
           *配置参数如下，如果需要配置其它参考hadoop官网
           * */
-        configuration.set("fs.defaultFS","hdfs://master:9000");
+        configuration.set("fs.defaultFS","hdfs://10.10.1.105:9000");
         configuration.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
         return configuration;
     }

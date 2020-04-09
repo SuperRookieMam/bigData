@@ -34,6 +34,7 @@ public class KafkaTest {
         }
         producer.close();
     }
+
     // 这个是 带事物的生产者
     public static void  beginfirstProducterAndTransational(){
         Properties props = new Properties();
