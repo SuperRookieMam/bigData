@@ -54,7 +54,7 @@
         <spark.version>2.4.3</spark.version>
         <scala.version>2.11.8</scala.version>
         <manven.scala.version>2.15.1</manven.scala.version>
-        <elserch.version>6.7.1</elserch.version>
+        <elserch.version>6.8.15</elserch.version>
         <hive.version>3.1.1</hive.version>
         <kafka.version>2.2.0</kafka.version>
         <spark-kafka.version>1.6.3</spark-kafka.version>
