@@ -47,7 +47,7 @@
         <maven.deploy.version>2.7</maven.deploy.version>
         <maven.source.version>2.4</maven.source.version>
         <mysql-connection.version>5.1.35</mysql-connection.version>
-        <log4j.version>2.11.1</log4j.version>
+        <log4j.version>2.15.0</log4j.version>
 
         <hadoop.version>3.1.2</hadoop.version>
         <hadoop-boot.version>2.5.0.RELEASE</hadoop-boot.version>
